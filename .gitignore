@@ -17,6 +17,35 @@
 # BlueMap runtime / rendered data
 /bluemap/
 
+# Paper runtime
+/.paper/
+/hs_err_pid*.log
+/replay_pid*.log
+
+# Runtime worlds
+/resource/
+
+# Mutable player/server state
+/ops.json
+/whitelist.json
+/banned-ips.json
+/banned-players.json
+
+# ClickMobs generated broken locale
+/plugins/ClickMobs/lang/en_US.json
+/plugins/clickmobs/lang/en_US.json
+
+# Plugin runtime/cache
+/plugins/Geyser-Spigot/cache/
+/plugins/Geyser-Spigot/locales/
+/plugins/GSit/data/
+/plugins/InvSeePlusPlus/InvSee++ logs/
+/plugins/WorldEdit/.archive-unpack/
+/plugins/spark/tmp/
+
+# Multiverse per-world runtime state
+/plugins/Multiverse-Core/worlds.yml
+
 .DS_Store
 Thumbs.db
 
