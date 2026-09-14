@@ -1,0 +1,23 @@
+/logs/
+/crash-reports/
+/cache/
+/libraries/
+/versions/
+
+/world/
+/world_nether/
+/world_the_end/
+
+/usercache.json
+
+/plugins/.paper-remapped/
+
+/plugins/floodgate/key.pem
+
+# BlueMap runtime / rendered data
+/bluemap/
+
+.DS_Store
+Thumbs.db
+
+connection.md

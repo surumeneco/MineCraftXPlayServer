@@ -1,0 +1,60 @@
+# ---------------------------------------------------------------------------------------------------------------------------
+
+# Bedrock Skin Restorer
+
+# ---------------------------------------------------------------------------------------------------------------------------
+
+fetch-retries: 2
+# ^ How many times the plugin tries to fetch the Floodgate player's skin after the first attempt.
+#   Higher values increase the chance that the skin will be fetched successfully,
+#   (For example, if an arbitrary error occurs), but may also impact performance via API requests.
+
+fetch-on-join: true
+# ^ Whether to attempt to fetch the Floodgate player's skin upon joining.
+
+fetch-on-join-delay-ticks: 15
+# ^ How long to wait after a Floodgate player joins before attempting to fetch/apply their skin.
+#   20 ticks is roughly 1 second. Keeping this delayed gives Geyser/Floodgate time to finish
+#   the Bedrock player's initial spawn and session setup. Use alongside compatibility-mode when needed.
+ 
+ 
+fetch-on-character-refresh: false
+# ^ Whether to fetch or re-fetch the Floodgate player's skin when respawning,
+#   changing dimensions, or switching servers/hubs.
+
+fetch-on-character-refresh-delay-ticks: 15
+# ^ How long to wait after a Floodgate player "refreshes" before attempting to fetch/apply their skin.
+#   20 ticks is roughly 1 second. Keeping this delayed gives Geyser/Floodgate time to finish
+#   the Bedrock player's initial spawn and session setup. Use alongside compatibility-mode when needed.
+
+compatibility-mode:
+  skins-restorer: false
+  bedrock-auto-auth: false
+# ^ Only enable if you experience issues, these are experimental patches.
+#   Do not add an entry, it does nothing.
+#   SkinsRestorer - Skips automatic join/respawn skin fetches when SkinsRestorer is already busy.
+#   Bedrock Auto-Auth - Checks that Bukkit still considers the player entity valid.
+
+# ---------------------------------------------------------------------------------------------------------------------------
+
+manual-fetch: false
+# ^ Whether to allow the Floodgate players to fetch manually.
+#   If *false*, ONLY OPs* can run the command below.
+
+
+manual-fetch-command: "/bedrockskin"
+# ^ The command players can call to attempt to fetch their skin, customizable.
+
+
+manual-fetch-command-java: "[Bedrock Skin Restorer] You are not a Floodgate user!"
+# ^ Error message if a Java player tries to run the command
+
+
+manual-fetch-command-noperm: "[Bedrock Skin Restorer] You don't have permission to execute this command!" 
+# ^ Error message if they don't have permission for manual fetching
+
+
+manual-fetch-command-error: "[Bedrock Skin Restorer] Failed to fetch skin from GeyserMC's API, try again later."
+# ^ General error message if it fails to fetch.
+
+# ---------------------------------------------------------------------------------------------------------------------------
