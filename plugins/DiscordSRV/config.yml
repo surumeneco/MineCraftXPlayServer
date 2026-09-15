@@ -27,13 +27,13 @@ BotToken: "BOTTOKEN"
 #
 # 各チャンネルの組の前半部分は Discord チャンネルの設定ではありません！
 # 編集したあとにこの設定を適用するには、「/discord reload」を実行してください
-Channels: {"global": "000000000000000000"}
+Channels: { "global": "1549445615296184401" }
 
 # コンソールチャンネルのID（数値。チャンネル名ではありません)。コンソールチャンネルを無効にする場合は、空のままにしてください。
-DiscordConsoleChannelId: "000000000000000000"
+DiscordConsoleChannelId: "1549436972358181014"
 
 # /discord でプレイヤーに表示される招待リンク、およびアカウント連携を強制する際にまだ連携していないプレイヤーに表示される招待リンク
-DiscordInviteLink: "https://discord.gg/changethisintheconfig.yml"
+DiscordInviteLink: ""
 
 # 実験
 # これらの機能は完全に最適化されていません。自己責任で使用してください。
@@ -141,14 +141,14 @@ DiscordChatChannelPrefixActsAsBlacklist: false
 DiscordChatChannelRolesAllowedToUseColorCodesInChat: ["Developer", "Owner", "Admin", "Moderator"]
 DiscordChatChannelBroadcastDiscordMessagesToConsole: true
 DiscordChatChannelRequireLinkedAccount: false
-DiscordChatChannelBlockBots: false
+DiscordChatChannelBlockBots: true
 DiscordChatChannelBlockWebhooks: true
 DiscordChatChannelBlockedIds: ["000000000000000000", "000000000000000000", "000000000000000000"]
 DiscordChatChannelBlockedRolesAsWhitelist: false
 DiscordChatChannelBlockedRolesIds: ["000000000000000000", "000000000000000000", "000000000000000000"]
 DiscordChatChannelRolesSelectionAsWhitelist: false
 DiscordChatChannelRolesSelection: ["Don't show me!", "Misc role"]
-DiscordChatChannelRoleAliases: {"Developer": "Dev"}
+DiscordChatChannelRoleAliases: { "Developer": "Dev" }
 
 # コンソールチャンネル情報
 # コンソールチャンネルは、DiscordのテキストチャンネルとMinecraftのサーバーコンソールを紐づけたチャンネルです。
@@ -172,8 +172,8 @@ DiscordChatChannelRoleAliases: {"Developer": "Dev"}
 DiscordConsoleChannelLogRefreshRateInSeconds: 5
 DiscordConsoleChannelUsageLog: "Console-%date%.log"
 DiscordConsoleChannelBlacklistActsAsWhitelist: false
-DiscordConsoleChannelBlacklistedCommands: ["?", "op", "deop", "execute"]
-DiscordConsoleChannelFilters: {".*(?i)async chat thread.*": "", ".*There are \\d+ (?:of a max of|out of maximum) \\d+ players online.*": ""}
+DiscordConsoleChannelBlacklistedCommands: ["?"]
+DiscordConsoleChannelFilters: { ".*(?i)async chat thread.*": "", ".*There are \\d+ (?:of a max of|out of maximum) \\d+ players online.*": "" }
 DiscordConsoleChannelLevels: [info, warn, error]
 DiscordConsoleChannelUseCodeBlocks: true
 DiscordConsoleChannelBlockBots: true
@@ -192,7 +192,7 @@ DiscordConsoleChannelBlockBots: true
 # DiscordChatChannelConsoleCommandExpiration: 送信されたコマンド出力がボットによって自動的に削除されるまでの時間（秒）。有効期限を無効にするには0に設定します。
 # DiscordChatChannelConsoleCommandExpirationDeleteRequest: コマンドを発行した人のメッセージを削除するかどうか
 #
-DiscordChatChannelConsoleCommandEnabled: true
+DiscordChatChannelConsoleCommandEnabled: false
 DiscordChatChannelConsoleCommandNotifyErrors: true
 DiscordChatChannelConsoleCommandPrefix: "!c"
 DiscordChatChannelConsoleCommandRolesAllowed: ["Owner", "Developer"]
@@ -221,7 +221,7 @@ DiscordChatChannelListCommandExpirationDeleteRequest: true
 # DiscordChatChannelDiscordFilters: Minecraft にメッセージを送信する際に適用される正規表現フィルター。結果が空になった場合、メッセージは送信されません。
 #
 DiscordChatChannelGameFilters: {}
-DiscordChatChannelDiscordFilters: {".*Online players \\(.*": "", ".*\\*\\*No online players\\*\\*.*": ""}
+DiscordChatChannelDiscordFilters: { ".*Online players \\(.*": "", ".*\\*\\*No online players\\*\\*.*": "" }
 
 # チャンネルトピック設定
 #
@@ -278,7 +278,7 @@ ChannelUpdater:
 # 定型文の応答を必要としない場合は、{} を設定してください。
 # PlaceholderAPIプレースホルダが使用可能です。
 #
-DiscordCannedResponses: {"!ip": "yourserveripchange.me", "!site": "http://yoursiteurl.net"}
+DiscordCannedResponses: { "!ip": "yourserveripchange.me", "!site": "http://yoursiteurl.net" }
 
 # Minecraft から Discord へのアカウント連携
 # これらは、MinecraftアカウントとDiscordアカウントを連携する機能に関する設定オプションです

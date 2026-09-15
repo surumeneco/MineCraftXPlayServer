@@ -14,7 +14,7 @@ Require linked account to play:
   # これらの意味がわからない場合は触れないでください
 
   # ここで指定されたMinecraftのIGN (ID) は常に許可 (リンクされているか、サブスクライバーであるかを問わない)
-  Bypass names: [Scarsz, Vankka]
+  Bypass names: []
   # バニラのホワイトリストに登録されているプレイヤーがアカウントをリンクする必要がないか、サブロールを持つかどうか
   Whitelisted players bypass check: true
   # バニラのBANリストに登録されているプレイヤーが自分のアカウントをリンクできるようにするかどうか
