@@ -46,6 +46,11 @@
 # Multiverse per-world runtime state
 /plugins/Multiverse-Core/worlds.yml
 
+# Local environment secrets
+/.env
+/.env.*
+!/.env.example
+
 .DS_Store
 Thumbs.db
 
