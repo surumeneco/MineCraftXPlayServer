@@ -133,7 +133,7 @@ gameplay:
   # Bedrock prevents building and displaying blocks above Y127 in the Nether.
   # This config option works around that by changing the Nether dimension ID to the End ID.
   # The main downside to this is that the entire Nether will have the same red fog rather than having different fog for each biome.
-  nether-roof-workaround: false
+  nether-roof-workaround: true
 
   # Whether to show Bedrock Edition emotes to other Bedrock Edition players.
   emotes-enabled: true
@@ -260,7 +260,7 @@ advanced:
     # DO NOT change this unless Geyser runs on a different port than the one that is used to connect.
     broadcast-port: 0
 
-    # How much to compress network traffic to the Bedrock client. The higher the number, the more CPU usage used, but
+    # How much to compress network traffic to the Bedrock client. The higher the number, the more CPU usage, but
     # the smaller the bandwidth used. Does not have any effect below -1 or above 9. Set to -1 to disable.
     compression-level: 6
 
