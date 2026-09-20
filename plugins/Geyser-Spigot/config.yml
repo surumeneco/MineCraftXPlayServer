@@ -260,7 +260,7 @@ advanced:
     # DO NOT change this unless Geyser runs on a different port than the one that is used to connect.
     broadcast-port: 0
 
-    # How much to compress network traffic to the Bedrock client. The higher the number, the more CPU usage, but
+    # How much to compress network traffic to the Bedrock client. The higher the number, the more CPU usage used, but
     # the smaller the bandwidth used. Does not have any effect below -1 or above 9. Set to -1 to disable.
     compression-level: 6
 
