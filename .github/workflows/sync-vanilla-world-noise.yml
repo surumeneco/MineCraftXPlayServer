@@ -1,0 +1,47 @@
+name: Sync vanilla world noise settings
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - .github/workflows/sync-vanilla-world-noise.yml
+      - scripts/sync_vanilla_world_noise.py
+      - datapacks/vanilla_world/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-noise-settings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Restore pinned Minecraft 26.2 vanilla settings
+        run: python3 scripts/sync_vanilla_world_noise.py
+      - name: Validate data pack
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('datapacks/vanilla_world')
+          pack = json.loads((root / 'pack.mcmeta').read_text())
+          dimension = json.loads((root / 'data/xplay/dimension/vanilla_world.json').read_text())
+          noise = json.loads((root / 'data/xplay/worldgen/noise_settings/vanilla_overworld.json').read_text())
+          assert pack['pack']['min_format'] == [107, 1]
+          assert dimension['type'] == 'minecraft:overworld'
+          assert dimension['generator']['settings'] == 'xplay:vanilla_overworld'
+          assert dimension['generator']['biome_source']['preset'] == 'minecraft:overworld'
+          assert noise['noise_router']['continents'] == 'minecraft:overworld/continents'
+          print('Vanilla world data pack JSON validated.')
+          PY
+      - name: Commit generated vanilla settings
+        run: |
+          git add datapacks/vanilla_world/data/xplay/worldgen/noise_settings/vanilla_overworld.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m 'Add pinned vanilla 26.2 noise settings for resource dimension'
+            git push origin HEAD:develop
+          fi
