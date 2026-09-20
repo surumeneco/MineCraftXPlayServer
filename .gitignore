@@ -56,3 +56,6 @@ Thumbs.db
 
 connection.md
 server.properties
+
+plugins/DiscordSRV/accounts.aof
+plugins/DiscordSRV/discord-console-logs/
