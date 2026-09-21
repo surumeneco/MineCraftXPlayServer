@@ -60,3 +60,5 @@ server.properties
 plugins/DiscordSRV/accounts.aof
 plugins/DiscordSRV/discord-console-logs/
 plugins/Geyser-Spigot/config.yml
+
+plugins/BlueMap/webserver.conf
