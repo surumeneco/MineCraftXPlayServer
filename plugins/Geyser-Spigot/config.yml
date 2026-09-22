@@ -1,12 +1,12 @@
 # --------------------------------
 # Geyser Configuration File
-# 
+#
 # A bridge between Minecraft: Bedrock Edition and Minecraft: Java Edition.
-# 
+#
 # GitHub: https://github.com/GeyserMC/Geyser
 # Discord: https://discord.gg/geysermc
 # Wiki: https://geysermc.org/wiki
-# 
+#
 # NOTICE: See https://geysermc.org/wiki/geyser/setup/ for the setup guide. Many video tutorials are outdated.
 # In most cases, especially with server hosting providers, further hosting-specific configuration is required.
 # --------------------------------
@@ -53,14 +53,14 @@ bedrock:
         # Path to a TLS certificate: either a PEM chain (with its key in "private-key"), or a PKCS12 file
         # (leave "private-key" empty). Players reaching signaling over TLS are not shown the "trust on first use" prompt.
         # Leave this empty to only serve plain HTTP.
-        certificate: ''
+        certificate: ""
 
         # PEM private key for "certificate". Leave empty when that is a PKCS12 file.
-        private-key: ''
+        private-key: ""
 
         # Password for the PKCS12 file, or for the PEM key if it is encrypted.
         # Use "file:/path/to/password" to read it from a file instead, which is safer than writing it here.
-        password: ''
+        password: ""
 
     # Settings for the external signaling service. Only used in the "nxs" and "hybrid" modes, or when built-in signaling cannot run.
     nxs:
@@ -68,7 +68,7 @@ bedrock:
       advertise-addresses: []
 
       # Access token for the signaling service, or file:/path/to/token to read it from a file. Leave empty to register without an account.
-      token: ''
+      token: ""
 
       # Address of the external signaling service (NXS). Defaults to warden.
       endpoint: https://agent.warden.cloud
