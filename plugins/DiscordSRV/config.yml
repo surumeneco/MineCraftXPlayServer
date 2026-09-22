@@ -46,7 +46,7 @@ Experiment_JdbcUsername: "username"
 Experiment_JdbcPassword: "password"
 
 # Webhook の配信
-Experiment_WebhookChatMessageDelivery: false
+Experiment_WebhookChatMessageDelivery: true
 Experiment_WebhookChatMessageUsernameFormat: "%displayname%"
 Experiment_WebhookChatMessageFormat: "%message%"
 Experiment_WebhookChatMessageUsernameFromDiscord: false
@@ -56,7 +56,7 @@ Experiment_WebhookChatMessageUsernameFilters: {}
 # 埋め込みと Webhook の画像/アバター URLの形式
 # デフォルト値を使用する場合は空白のままにします
 # 利用可能なプレースホルダー: {texture} {username} {uuid} {uuid-nodashes} {size}
-AvatarUrl: ""
+AvatarUrl: "https://mc-heads.net/avatar/{texture}/{size}.png"
 
 # 書式の再変換
 # MinecraftとDiscord間の書式設定（太字、斜体、下線、取り消し線）を変換する
