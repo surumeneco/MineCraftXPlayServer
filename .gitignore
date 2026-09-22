@@ -79,3 +79,6 @@ plugins/BlueMap/webserver.conf
 
 # LuckPerms - local configuration
 /plugins/LuckPerms/config.yml
+
+plugins/WorldEdit/sessions/
+debug/
