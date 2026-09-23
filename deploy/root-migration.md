@@ -7,24 +7,28 @@
 ```bash
 sudo systemctl stop minecraft.service
 sudo systemctl is-active minecraft.service  # inactive と表示されること
+df -h /opt/minecraft /root
 sudo tar -C /opt/minecraft -czpf "/root/minecraft-server-$(date +%Y%m%d-%H%M%S).tar.gz" server
 ```
 
-バックアップコマンドが成功したことと、`/root/` のアーカイブが作成されたことを確認する。作業前にディスク容量も確認する。`Launcher.java` は起動時に `world/datapacks/` を削除して同期するため、稼働中のpullや同期は行わない。
+バックアップコマンドが成功したことと、`/root/` のアーカイブが作成されたことを確認する。ディスク容量が不足していればバックアップ先を確保してから続行する。`Launcher.java` は起動時に `world/datapacks/` を削除して同期するため、稼働中のpullや同期は行わない。
 
-## 2. develop を取得し、所有者を変更
+## 2. 所有者を変更してdevelopを取得
+
+Gitが所有者不一致を検出しないよう、**rootでGit操作する前に**リポジトリ自身と `.git` をrootに変更する。
 
 ```bash
+sudo chown -R root:root /opt/minecraft/server
+[ ! -f /opt/minecraft/server/.env ] || sudo chmod 600 /opt/minecraft/server/.env
 cd /opt/minecraft/server
 sudo git status --short
+sudo git remote -v
 sudo git fetch origin --prune
 sudo git switch develop
 sudo git pull --ff-only origin develop
-sudo chown -R root:root /opt/minecraft/server
-sudo chmod 600 /opt/minecraft/server/.env  # .env が存在する場合のみ
 ```
 
-`git status` に変更があれば原因を確認し、失われる操作は避ける。`git switch` / `pull` が失敗したら先へ進まない。`.env` やワールドデータは Git 管理外。所有者変更は `/opt/minecraft/server` 内の `.git` とワールド・プラグインも含む。Git操作も以後rootで実行し、`minecraft`ユーザーでのGit操作と混用しない。
+`git status` に変更があれば原因を確認し、失われる操作は避ける。`fetch` / `switch` / `pull` が失敗したら先へ進まない。GitのリモートがSSH認証でrootに鍵が無い場合はfetchに失敗する可能性があるため、その場合は認証方法を確認する。`safe.directory=*` で検査を無効化しない。`.env` やワールドデータは Git 管理外。所有者変更は `/opt/minecraft/server` 内の `.git` とワールド・プラグインも含む。Git操作も以後rootで実行し、`minecraft`ユーザーでのGit操作と混用しない。
 
 ## 3. systemd ユニットを反映
 
