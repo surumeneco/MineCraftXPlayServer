@@ -15,7 +15,7 @@ git pull --ff-only origin develop
 git status --short
 ```
 
-`main` には DiscordSRV 関連などの `develop` の変更が未反映です。起動前にブランチを必ず確認してください。ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
+`main` には `develop` の変更が未反映です。起動前にブランチを必ず確認してください。ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
 
 ## ローカルで起動する
 
@@ -57,11 +57,7 @@ java Launcher
 
 Java/Bedrock の公開には playit.gg、BlueMap の公開には Cloudflare Tunnel を使用します。Minecraft 本体の起動と、各トンネルの起動・接続状態は別々に確認してください。Bedrock の外部ポート `12504` と、Geyser の VPS 内 UDP ポート `19132` は別の値です。
 
-BlueMap の内部 Web サーバーは `127.0.0.1:8100` で待ち受けます。公開ドメインを使わずに確認する場合は、次の SSH ポート転送を VSCode の**ローカル**ターミナルで実行し、`http://localhost:8100` を開きます（接続パラメーターは自分の環境の値に置換）。
-
-```powershell
-ssh -i "$HOME/.ssh/鍵ファイル名" -L 8100:127.0.0.1:8100 SSHユーザー名@Minecraft_VPSのIP
-```
+BlueMap の内部 Web サーバーは環境別設定の待受IP・ポートを使用します。公開ドメインを使わず確認する場合は、BlueMap の実際の待受IPとVPSのSSH経路に合わせてポート転送を設定します。
 
 ## VPS へ接続する（VSCode のターミナルから）
 
@@ -71,63 +67,41 @@ VSCode のローカルターミナルで、実際の SSH ユーザー・秘密�
 ssh -i "$HOME/.ssh/鍵ファイル名" SSHユーザー名@Minecraft_VPSのIP
 ```
 
-以降のコマンドは SSH 接続先の **Ubuntu** で実行します。サーバーの配置パスは VPS 上の実際のパスに読み替えてください。既存サーバーの実行ユーザーとファイル所有者を確認し、Minecraft を root として新規起動しないでください。
+以降のコマンドは SSH 接続先の **Ubuntu** で実行します。現在の配置先は `/opt/minecraft/server`、常駐起動は `minecraft.service` による systemd 管理です。**tmux や `java Launcher` で二重起動しません。**
 
 ```bash
-cd /実際の配置先/MineCraftXPlayServer
+cd /opt/minecraft/server
 pwd
 git branch --show-current
 git status --short
 java -version
 javac -version
-ps -eo pid,user,args | grep '[p]aper.jar'
-tmux ls
+systemctl status minecraft.service --no-pager
 ```
-
-`ps` にサーバーが表示される場合は **二重起動しません**。既存の tmux セッションや、実際に採用しているプロセス管理方法を確認します。`tmux ls` にセッションがない場合でも、`ps` で実行中なら新規起動しないでください。
 
 ## VPS での起動・停止・更新
 
-以下は tmux を使用してコンソールを保持する場合の操作例です。`tmux` がない環境では先に導入する必要があります。すでに別の方法で常駐起動している場合は、その方式を優先し、この手順と混在させないでください。
+2026-09-23 の運用変更方針として、VPS の Minecraft と Paper を root で起動します。手順の正本は **[deploy/root-migration.md](deploy/root-migration.md)**、ユニットのテンプレートは **[deploy/minecraft.service](deploy/minecraft.service)** です。VPS固有の `/etc/systemd/system/minecraft.service`、ワールド、`.env`、ファイル所有者はpushだけでは変更されません。
 
-停止済みであること、`.env`・`server.properties`・ワールドデータなど VPS 固有の実データが揃っていることを確認した上で、必要ならブランチを更新します。
+この構成では Paper とすべてのプラグインが root の権限を持つため、任意コード実行やプラグイン侵害時に OS 全体へ影響し得ます。また root 化は過去の `AccessDeniedException` の原因解明・解消を保証しません。
 
-```bash
-git fetch origin --prune
-git switch develop
-git pull --ff-only origin develop
-[ -f .env ] || cp .env.example .env
-javac Launcher.java
-tmux new -s xplay
-```
-
-開いた tmux セッション内で次を実行します。
+停止済みであること、VPS 固有のデータが揃っていることを確認してから更新します。**停止・バックアップ → `develop` の更新 → 所有者の統一とsystemdのユニット反映 → 起動・検証**の順番は移行マニュアルを参照してください。移行後の日常操作は以下です。
 
 ```bash
-java Launcher
+sudo systemctl stop minecraft.service
+cd /opt/minecraft/server
+sudo git pull --ff-only origin develop
+sudo systemctl start minecraft.service
+sudo systemctl status minecraft.service --no-pager -l
 ```
 
-コンソールから離れるだけなら `Ctrl+B` の後に `D` でデタッチします。別の SSH セッションから再接続する場合は以下を実行します。
-
-```bash
-tmux attach -t xplay
-```
-
-停止は **接続した Paper コンソールへ `stop` を入力**します。正常終了後にシェルへ戻ったら、必要に応じて `exit` で tmux セッションを終了します。設定・コード・プラグイン更新時は、サーバーを停止し、ワールド等のバックアップを取得してから `git pull --ff-only origin develop` と再起動を行います。起動中にプラグインやワールドのファイルを Git 操作で上書きしないでください。
-
-ログの確認先はコンソールおよび `logs/latest.log` です。
-
-```bash
-tail -n 100 logs/latest.log
-tail -f logs/latest.log
-```
-
-`Launcher.java` のコンパイルでできる `Launcher.class` は Git の追跡対象ではありません。`git status --short` で変更内容を確認し、実行時データや Secret をコミットしないでください。
+`Launcher.java` を編集した場合は、起動前にJDKの状況を確認してください。現行の `ExecStart=/usr/bin/java Launcher.java` はソースファイルをJavaで直接実行します。ログは `sudo journalctl -u minecraft.service -f` および `logs/latest.log` で確認します。Git管理外データやSecretをコミットしないでください。
 
 ## 管理対象とバックアップ
 
-- Git 管理: `Launcher.java`、`jvm.args`、`paper.jar`、`plugins/` 内の追跡対象、`datapacks/` など。
+- Git 管理: `Launcher.java`、`jvm.args`、`paper.jar`、`plugins/` 内の追跡対象、`datapacks/`、`deploy/` など。
 - Git 管理外: `world/` などのワールド、`server.properties`、`.env`、`logs/`、`bluemap/`、プレイヤーデータ・権限ファイル等。別途バックアップ・復元が必要です。
 - `jvm.args` のメモリ指定は VPS の空きメモリも考慮し、起動前に確認してください。
+- root 運用に変更後は、Git操作もrootで実行し、元の `minecraft` ユーザーによるGit操作・ファイル生成と混用しません。
 
 構成の参照先: [サーバー構成](https://drive.google.com/file/d/1SndNSbyQX5HUEEE-ueQAofPO0bZ6jvto/view)、[接続関係](https://drive.google.com/file/d/1I1ZpsEXeJMAhAhrEcpgu3yhNP9FDhDzL/view)。
