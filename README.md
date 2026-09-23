@@ -85,7 +85,7 @@ systemctl status minecraft.service --no-pager
 
 この構成では Paper とすべてのプラグインが root の権限を持つため、任意コード実行やプラグイン侵害時に OS 全体へ影響し得ます。また root 化は過去の `AccessDeniedException` の原因解明・解消を保証しません。
 
-停止済みであること、VPS 固有のデータが揃っていることを確認してから更新します。**停止・バックアップ → `develop` の更新 → 所有者の統一とsystemdのユニット反映 → 起動・検証**の順番は移行マニュアルを参照してください。移行後の日常操作は以下です。
+停止済みであること、VPS 固有のデータが揃っていることを確認してから更新します。**停止・バックアップ → `/opt/minecraft/server` と `.git` の所有者を root に変更 → `develop` の更新 → systemd のユニット反映 → 起動・検証**の順番は移行マニュアルを参照してください。移行後の日常操作は以下です。
 
 ```bash
 sudo systemctl stop minecraft.service
