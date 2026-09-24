@@ -110,4 +110,4 @@ RCONのSecretと `server.properties` はGit管理外です。導入・更新・�
 - `jvm.args` のメモリ指定は VPS の空きメモリも考慮し、起動前に確認してください。
 - root 運用に変更後は、Git操作もrootで実行し、元の `minecraft` ユーザーによるGit操作・ファイル生成と混用しません。
 
-構成の参照先: [サーバー構成](https://drive.google.com/file/d/1SndNSbyQX5HUEEE-ueQAofPO0bZ6jvto/view)、[接続関係](https://drive.google.com/file/d/1I1ZpsEXeJMAhAhrEcpgu3yhNP9FDhDzL/view)。
+構成の参照先: [サーバー構成](https://drive.google.com/file/d/1ufmtWfd-PDFU5Ac8709cApoY2vMogRZ8/view)、[接続関係](https://drive.google.com/file/d/1I1ZpsEXeJMAhAhrEcpgu3yhNP9FDhDzL/view)。
