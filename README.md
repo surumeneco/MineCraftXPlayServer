@@ -15,7 +15,7 @@ git pull --ff-only origin develop
 git status --short
 ```
 
-`main` には `develop` の変更が未反映です。起動前にブランチを必ず確認してください。ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
+`main` / `develop` の役割は作業時点のGitHub上の状態を確認してください。起動前にブランチを必ず確認し、ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
 
 ## ローカルで起動する
 
@@ -96,6 +96,12 @@ sudo systemctl status minecraft.service --no-pager -l
 ```
 
 `Launcher.java` を編集した場合は、起動前にJDKの状況を確認してください。現行の `ExecStart=/usr/bin/java Launcher.java` はソースファイルをJavaで直接実行します。ログは `sudo journalctl -u minecraft.service -f` および `logs/latest.log` で確認します。Git管理外データやSecretをコミットしないでください。
+
+## 日次再起動
+
+本番Minecraftサーバーは毎日03:00（Asia/Tokyo）前後に自動再起動する構成です。02:55に `minecraft-maintenance.timer` が処理を開始し、RCONで5分前通知、10秒前からのカウントダウン、`save-all flush` を実行してから `minecraft.service` を再起動します。
+
+RCONのSecretと `server.properties` はGit管理外です。導入・更新・確認手順は **[deploy/daily-restart.md](deploy/daily-restart.md)** を参照してください。
 
 ## 管理対象とバックアップ
 
