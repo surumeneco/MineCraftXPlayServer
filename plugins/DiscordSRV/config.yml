@@ -27,10 +27,10 @@ BotToken: "BOTTOKEN"
 #
 # 各チャンネルの組の前半部分は Discord チャンネルの設定ではありません！
 # 編集したあとにこの設定を適用するには、「/discord reload」を実行してください
-Channels: { "global": "1549445615296184401" }
+Channels: { "global": "1549296136278507551" }
 
 # コンソールチャンネルのID（数値。チャンネル名ではありません)。コンソールチャンネルを無効にする場合は、空のままにしてください。
-DiscordConsoleChannelId: "1549436972358181014"
+DiscordConsoleChannelId: "1549416230409211934"
 
 # /discord でプレイヤーに表示される招待リンク、およびアカウント連携を強制する際にまだ連携していないプレイヤーに表示される招待リンク
 DiscordInviteLink: ""
