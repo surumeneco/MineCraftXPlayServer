@@ -4,7 +4,7 @@ Minecraftサーバーを毎日03:00（Asia/Tokyo）前後に再起動するた�
 
 ## 1. RCON用Secretを設定する
 
-`/opt/minecraft/server/.env` にRCON設定を追加する。パスワードは十分に長いランダム値を使用し、Gitへ登録しない。
+`/opt/minecraft/server/.env` にRCON設定を追加する。パスワードは英数字で十分に長いランダム値を使用し、Gitへ登録しない。
 
 ```dotenv
 RCON_HOST=127.0.0.1
@@ -46,11 +46,9 @@ set +a
 ```bash
 cd /opt/minecraft/server
 
-sudo install -o root -g root -m 644   deploy/minecraft-maintenance.service   /etc/systemd/system/minecraft-maintenance.service
-
-sudo install -o root -g root -m 644   deploy/minecraft-maintenance.timer   /etc/systemd/system/minecraft-maintenance.timer
-
-sudo systemd-analyze verify   /etc/systemd/system/minecraft-maintenance.service   /etc/systemd/system/minecraft-maintenance.timer
+sudo install -o root -g root -m 644 deploy/minecraft-maintenance.service /etc/systemd/system/minecraft-maintenance.service
+sudo install -o root -g root -m 644 deploy/minecraft-maintenance.timer /etc/systemd/system/minecraft-maintenance.timer
+sudo systemd-analyze verify /etc/systemd/system/minecraft-maintenance.service /etc/systemd/system/minecraft-maintenance.timer
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now minecraft-maintenance.timer
