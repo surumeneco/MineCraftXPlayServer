@@ -59,6 +59,19 @@ Java/Bedrock の公開には playit.gg、BlueMap の公開には Cloudflare Tunn
 
 BlueMap の内部 Web サーバーは環境別設定の待受IP・ポートを使用します。公開ドメインを使わず確認する場合は、BlueMap の実際の待受IPとVPSのSSH経路に合わせてポート転送を設定します。
 
+### 領地マーカーの起動時同期
+
+領地の正本はWebApp DBです。LauncherはPaper起動前にWebAppの内部APIから生成済みBlueMap marker-set設定を取得し、`plugins/BlueMap/maps/territories.conf` を更新します。
+
+`.env` へ次を設定します。実値はGitへコミットしません。
+
+```dotenv
+TERRITORY_CONFIG_URL=
+TERRITORY_CONFIG_SECRET=
+```
+
+`TERRITORY_CONFIG_URL` にはWebAppバックエンドの `/api/internal/territories/bluemap-config` へ到達できるURLを設定し、`TERRITORY_CONFIG_SECRET` はWebApp側の同名Secretと一致させます。取得成功時だけ一時ファイルから設定を置換し、未設定・HTTPエラー・通信失敗時は既存の `territories.conf` を維持したままPaper起動を続行します。HTTPリダイレクトは追従しません。
+
 ## VPS へ接続する（VSCode のターミナルから）
 
 VSCode のローカルターミナルで、実際の SSH ユーザー・秘密鍵・Minecraft 側 VPS の IP を使用します。SSH 接続に Minecraft の playit.gg アドレスは使用しません。
