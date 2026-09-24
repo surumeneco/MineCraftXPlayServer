@@ -46,8 +46,39 @@
 # Multiverse per-world runtime state
 /plugins/Multiverse-Core/worlds.yml
 
+# Local environment secrets
+/.env
+/.env.*
+!/.env.example
+
 .DS_Store
 Thumbs.db
 
 connection.md
 server.properties
+
+plugins/DiscordSRV/accounts.aof
+plugins/DiscordSRV/discord-console-logs/
+plugins/Geyser-Spigot/config.yml
+
+plugins/BlueMap/webserver.conf
+
+# Multiverse Portals - environment-specific portals
+/plugins/Multiverse-Portals/portals.yml
+
+# Multiverse NetherPortals - explicit world links
+/plugins/Multiverse-NetherPortals/links.yml
+
+# Multiverse Core - environment-specific anchors
+/plugins/Multiverse-Core/anchors.yml
+
+# LuckPerms - persistent data
+/plugins/LuckPerms/*.db
+/plugins/LuckPerms/*.db.*
+/plugins/LuckPerms/*-storage/
+
+# LuckPerms - local configuration
+/plugins/LuckPerms/config.yml
+
+plugins/WorldEdit/sessions/
+debug/

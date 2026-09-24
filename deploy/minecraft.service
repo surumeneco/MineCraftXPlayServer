@@ -1,0 +1,13 @@
+[Unit]
+Description=MineCraftXPlayServer
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/minecraft/server
+ExecStart=/usr/bin/java Launcher.java
+Restart=on-failure
+RestartSec=10
