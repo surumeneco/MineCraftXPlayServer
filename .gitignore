@@ -82,3 +82,5 @@ plugins/BlueMap/webserver.conf
 
 plugins/WorldEdit/sessions/
 debug/
+
+jvm.args
