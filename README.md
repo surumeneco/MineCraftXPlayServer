@@ -62,9 +62,12 @@ BlueMap の内部 Web サーバーは環境別設定の待受IP・ポートを�
 ### 領地マーカー同期（起動時・手動）
 
 領地マーカーの正本はWebApp DBです。BlueMapは `plugins/BlueMap/maps/world.conf` を読みますが、
-このファイルは固定設定 `world.fixed.conf` とWebAppの領地設定を合成して**自動生成**します。
-手動のマーカーや地形・描画設定は `world.fixed.conf` に記入してください。生成済みの `world.conf` を
+このファイルは固定設定 `config/bluemap/world.fixed.conf` とWebAppの領地設定を合成して**自動生成**します。
+手動のマーカーや地形・描画設定は `config/bluemap/world.fixed.conf` に記入してください。生成済みの `world.conf` を
 次の生成の入力にすることはないため、削除・変更された領地は正しく入れ替わります。
+`world.conf` はGit管理外の生成物です。旧リポジトリから更新する際に
+ローカルだけで編集していた固定マーカーがあれば、**Pull前にworld.confをバックアップし、
+必要な変更をテンプレートへ移してから**起動してください。領地データ・ワールドは削除しません。
 
 #### 一度だけ必要な導入
 
@@ -88,6 +91,7 @@ TERRITORY_CONFIG_SECRET=
 
 LauncherはPaper起動前にこのJARの `--sync` を呼びます。JAR未導入、通信失敗、
 構文検証失敗のときは既存の `world.conf` を保持してPaper起動を続けます。
+`world.conf` がまだ存在しない場合は固定テンプレートから初期生成します。
 同期に成功すれば固定マーカーを保持したまま `world.conf` の内容が変わります。
 `territories.conf` は旧方式の生成物で、以降はBlueMapから参照しません。
 
