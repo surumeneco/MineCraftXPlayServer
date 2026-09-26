@@ -59,18 +59,51 @@ Java/Bedrock の公開には playit.gg、BlueMap の公開には Cloudflare Tunn
 
 BlueMap の内部 Web サーバーは環境別設定の待受IP・ポートを使用します。公開ドメインを使わず確認する場合は、BlueMap の実際の待受IPとVPSのSSH経路に合わせてポート転送を設定します。
 
-### 領地マーカーの起動時同期
+### 領地マーカー同期（起動時・手動）
 
-領地の正本はWebApp DBです。LauncherはPaper起動前にWebAppの内部APIから生成済みBlueMap marker-set設定を取得し、`plugins/BlueMap/maps/territories.conf` を更新します。
+領地マーカーの正本はWebApp DBです。BlueMapは `plugins/BlueMap/maps/world.conf` を読みますが、
+このファイルは固定設定 `world.fixed.conf` とWebAppの領地設定を合成して**自動生成**します。
+手動のマーカーや地形・描画設定は `world.fixed.conf` に記入してください。生成済みの `world.conf` を
+次の生成の入力にすることはないため、削除・変更された領地は正しく入れ替わります。
 
-`.env` へ次を設定します。実値はGitへコミットしません。
+#### 一度だけ必要な導入
+
+Paper 26.2 / Java 25とMavenを用意して、次を実行します。既存ワールドの削除・再生成は不要です。
+
+```powershell
+mvn -f tools/territory-map-sync/pom.xml -B clean package
+Copy-Item tools/territory-map-sync/target/TerritoryMapSync.jar plugins/TerritoryMapSync.jar -Force
+```
+
+本番Ubuntuではコピーの代わりに `cp` を使用してください。GitHub ActionsのCI artifactから
+同じJARを取得して `plugins/TerritoryMapSync.jar` に置くことも可能です。
+JARの導入・更新時だけPaperを再起動してください。導入後の領地更新には再起動は不要です。
+
+MinecraftルートのGit管理外 `.env` に設定します。値はWebAppの `TERRITORY_CONFIG_SECRET` と一致させます。
 
 ```dotenv
 TERRITORY_CONFIG_URL=
 TERRITORY_CONFIG_SECRET=
 ```
 
-`TERRITORY_CONFIG_URL` にはWebAppバックエンドの `/api/internal/territories/bluemap-config` へ到達できるURLを設定し、`TERRITORY_CONFIG_SECRET` はWebApp側の同名Secretと一致させます。取得成功時だけ一時ファイルから設定を置換し、未設定・HTTPエラー・通信失敗時は既存の `territories.conf` を維持したままPaper起動を続行します。HTTPリダイレクトは追従しません。
+LauncherはPaper起動前にこのJARの `--sync` を呼びます。JAR未導入、通信失敗、
+構文検証失敗のときは既存の `world.conf` を保持してPaper起動を続けます。
+同期に成功すれば固定マーカーを保持したまま `world.conf` の内容が変わります。
+`territories.conf` は旧方式の生成物で、以降はBlueMapから参照しません。
+
+#### Paper稼働中の手動更新
+
+ゲーム内のOPから `/territorymap sync`、MinecraftコンソールやDiscordSRVの
+管理コンソールチャンネルから `territorymap sync` を実行します。
+通信と設定検証は非同期で行い、正常に設定を置換した場合だけ
+`bluemap reload light` を自動で実行します。DiscordSRVコンソールチャンネルへ
+コマンドを送る権限は、当該チャンネルへのアクセス制御で別途制限してください。
+プレイヤーからの実行は `territorymap.sync`（OPデフォルト）で制限します。
+
+`bluemap update` は地形タイル更新用であり、WebAppからの領地同期を実行しません。
+`world.conf` だけを変更して `bluemap reload light` を実行することもできますが、
+通常の手動反映では `territorymap sync` を使用してください。
+
 
 ## VPS へ接続する（VSCode のターミナルから）
 
