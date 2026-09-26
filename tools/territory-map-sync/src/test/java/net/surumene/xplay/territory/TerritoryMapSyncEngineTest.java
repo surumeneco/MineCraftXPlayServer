@@ -94,6 +94,7 @@ class TerritoryMapSyncEngineTest {
         Path fixed = root.resolve(TerritoryMapSyncEngine.FIXED);
         Path output = root.resolve(TerritoryMapSyncEngine.OUTPUT);
         Files.createDirectories(fixed.getParent());
+        Files.createDirectories(output.getParent());
         Files.writeString(fixed, FIXED);
         Files.writeString(output, "old-world-conf");
 
@@ -117,6 +118,7 @@ class TerritoryMapSyncEngineTest {
         Path fixed = root.resolve(TerritoryMapSyncEngine.FIXED);
         Path output = root.resolve(TerritoryMapSyncEngine.OUTPUT);
         Files.createDirectories(fixed.getParent());
+        Files.createDirectories(output.getParent());
         Files.writeString(fixed, FIXED);
         Files.writeString(output, "previous-valid-config");
 
