@@ -1,14 +1,7 @@
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.StandardCopyOption;
-import java.time.Duration;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +16,7 @@ public class Launcher {
 
     private static final String DISCORD_BOT_TOKEN = "DISCORD_BOT_TOKEN";
     private static final String DISCORDSRV_TOKEN = "DISCORDSRV_TOKEN";
-    private static final String TERRITORY_CONFIG_URL = "TERRITORY_CONFIG_URL";
-    private static final String TERRITORY_CONFIG_SECRET = "TERRITORY_CONFIG_SECRET";
-    private static final Path TERRITORY_CONFIG_TARGET = Path.of("plugins", "BlueMap", "maps", "territories.conf");
+    private static final Path TERRITORY_SYNC_JAR = Path.of("plugins", "TerritoryMapSync.jar");
 
     private static final Path DATAPACK_SOURCE = Path.of("datapacks");
     private static final Path WORLD_DATAPACKS = Path.of("world", "datapacks");
@@ -45,7 +36,7 @@ public class Launcher {
             root.resolve(DATAPACK_SOURCE),
             root.resolve(WORLD_DATAPACKS)
         );
-        syncTerritoryBlueMapConfig(root, root.resolve(ENV_FILE));
+        syncTerritoryBlueMapConfig(root);
 
         for (Path relativePath : PRE_START_DELETIONS) {
             Path target = root.resolve(relativePath);
@@ -80,72 +71,28 @@ public class Launcher {
         System.exit(exitCode);
     }
 
-    private static void syncTerritoryBlueMapConfig(Path root, Path envFile) {
-        try {
-            Map<String, String> fileValues = readDotEnv(envFile);
-            String url = firstText(System.getenv(TERRITORY_CONFIG_URL), fileValues.get(TERRITORY_CONFIG_URL));
-            String secret = firstText(System.getenv(TERRITORY_CONFIG_SECRET), fileValues.get(TERRITORY_CONFIG_SECRET));
-            Path target = root.resolve(TERRITORY_CONFIG_TARGET);
-
-            if (url == null && secret == null) {
-                System.out.println("[Launcher] Territory BlueMap sync is not configured; keeping existing marker config.");
-                return;
-            }
-            if (url == null || secret == null) {
-                System.err.println("[Launcher] Territory BlueMap sync is incomplete; keeping existing marker config.");
-                return;
-            }
-
-            HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
-            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
-                .timeout(Duration.ofSeconds(10))
-                .header("Authorization", "Bearer " + secret)
-                .header("Accept", "text/plain")
-                .GET()
-                .build();
-            HttpResponse<String> response = client.send(
-                request,
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
-            );
-            String body = response.body();
-
-            if (response.statusCode() != 200 || body == null || body.isBlank()) {
-                System.err.println(
-                    "[Launcher] Territory BlueMap sync failed with HTTP "
-                        + response.statusCode()
-                        + "; keeping existing marker config."
-                );
-                return;
-            }
-
-            Files.createDirectories(target.getParent());
-            Path temporary = target.resolveSibling(target.getFileName() + ".tmp");
-            Files.writeString(temporary, body, StandardCharsets.UTF_8);
-            try {
-                Files.move(
-                    temporary,
-                    target,
-                    StandardCopyOption.REPLACE_EXISTING,
-                    StandardCopyOption.ATOMIC_MOVE
-                );
-            } catch (AtomicMoveNotSupportedException e) {
-                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-            }
-            System.out.println("[Launcher] Territory BlueMap marker config synchronized.");
-        } catch (Exception e) {
-            System.err.println(
-                "[Launcher] Territory BlueMap sync failed; keeping existing marker config: "
-                    + e.getClass().getSimpleName()
-            );
+    private static void syncTerritoryBlueMapConfig(Path root) {
+        Path jar = root.resolve(TERRITORY_SYNC_JAR);
+        if (!Files.isRegularFile(jar)) {
+            System.err.println("[Launcher] TerritoryMapSync.jar is not installed; keeping existing world.conf.");
+            return;
         }
-    }
-
-    private static String firstText(String first, String second) {
-        String value = trimToNull(first);
-        return value != null ? value : trimToNull(second);
+        try {
+            Process process = new ProcessBuilder(
+                "java", "-jar", TERRITORY_SYNC_JAR.toString(), "--sync"
+            ).directory(root.toFile()).inheritIO().start();
+            int exit = process.waitFor();
+            if (exit != 0) {
+                System.err.println("[Launcher] Territory BlueMap sync exited with " + exit
+                    + "; Paper startup continues with existing world.conf.");
+            }
+        } catch (IOException e) {
+            System.err.println("[Launcher] Territory BlueMap sync failed; keeping world.conf: "
+                + e.getClass().getSimpleName());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("[Launcher] Territory BlueMap sync interrupted; keeping existing world.conf.");
+        }
     }
 
     private static void configureDiscordSrvToken(
