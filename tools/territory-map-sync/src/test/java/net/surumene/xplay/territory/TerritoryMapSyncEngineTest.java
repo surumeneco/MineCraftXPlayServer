@@ -80,7 +80,7 @@ class TerritoryMapSyncEngineTest {
 
     @Test
     void parsesActualFixedWorldConfig() throws IOException {
-        Path original = Path.of("..", "..", "plugins", "BlueMap", "maps", "world.fixed.conf");
+        Path original = Path.of("..", "..", "config", "bluemap", "world.fixed.conf");
         String fixed = Files.readString(original, StandardCharsets.UTF_8);
         String result = TerritoryMapSyncEngine.merge(fixed, DYNAMIC);
         Config parsed = ConfigFactory.parseString(result).resolve();
