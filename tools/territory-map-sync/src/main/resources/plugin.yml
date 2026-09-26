@@ -1,0 +1,15 @@
+name: TerritoryMapSync
+version: 0.1.0
+main: net.surumene.xplay.territory.TerritoryMapSyncPlugin
+api-version: '26.2'
+softdepend: [BlueMap]
+description: Synchronizes WebApp territory markers into BlueMap without restarting Paper.
+commands:
+  territorymap:
+    description: Rebuild world.conf and reload BlueMap territory markers
+    usage: /territorymap sync
+    permission: territorymap.sync
+permissions:
+  territorymap.sync:
+    description: Refresh BlueMap territory markers from the WebApp
+    default: op
