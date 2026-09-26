@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class TerritoryMapSyncEngine {
-    static final Path FIXED = Path.of("plugins", "BlueMap", "maps", "world.fixed.conf");
+    static final Path FIXED = Path.of("config", "bluemap", "world.fixed.conf");
     static final Path OUTPUT = Path.of("plugins", "BlueMap", "maps", "world.conf");
     static final int MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 
