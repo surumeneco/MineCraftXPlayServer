@@ -28,9 +28,9 @@ jobs:
       - name: Verify BlueMap fixed configuration source
         shell: bash
         run: |
-          test -f plugins/BlueMap/maps/world.fixed.conf
+          test -f config/bluemap/world.fixed.conf
           test -f plugins/BlueMap/maps/world.conf
-          grep -F '"first-area"' plugins/BlueMap/maps/world.fixed.conf
+          grep -F '"first-area"' config/bluemap/world.fixed.conf
           ! grep -F 'include "territories.conf"' plugins/BlueMap/maps/world.conf
       - name: Upload installable plugin JAR
         uses: actions/upload-artifact@v4
