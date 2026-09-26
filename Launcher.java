@@ -38,6 +38,7 @@ public class Launcher {
             root.resolve(WORLD_DATAPACKS)
         );
         syncTerritoryBlueMapConfig(root);
+        ensureFixedBlueMapFallback(root);
 
         for (Path relativePath : PRE_START_DELETIONS) {
             Path target = root.resolve(relativePath);
@@ -94,6 +95,24 @@ public class Launcher {
             Thread.currentThread().interrupt();
             System.err.println("[Launcher] Territory BlueMap sync interrupted; keeping existing world.conf.");
         }
+    }
+
+    private static void ensureFixedBlueMapFallback(Path root) throws IOException {
+        Path output = root.resolve("plugins/BlueMap/maps/world.conf");
+        if (Files.isRegularFile(output)) return;
+
+        Path fixed = root.resolve("config/bluemap/world.fixed.conf");
+        requireFile(fixed);
+        Files.createDirectories(output.getParent());
+        Path temporary = Files.createTempFile(output.getParent(), ".world-conf-fallback-", ".tmp");
+        try {
+            Files.copy(fixed, temporary, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(temporary, output,
+                StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } finally {
+            Files.deleteIfExists(temporary);
+        }
+        System.out.println("[Launcher] Initialized world.conf from fixed markers (territory sync unavailable).");
     }
 
     private static void configureDiscordSrvToken(
