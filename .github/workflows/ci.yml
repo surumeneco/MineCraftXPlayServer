@@ -20,11 +20,20 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - name: Compile Launcher
         run: javac Launcher.java
-      - name: Verify BlueMap territory config wiring
+      - name: Build and test TerritoryMapSync plugin
+        run: mvn -B -f tools/territory-map-sync/pom.xml clean verify
+      - name: Verify BlueMap fixed configuration source
         shell: bash
         run: |
-          test -f plugins/BlueMap/maps/territories.conf
-          grep -F 'include "territories.conf"' plugins/BlueMap/maps/world.conf
+          test -f plugins/BlueMap/maps/world.fixed.conf
+          test -f plugins/BlueMap/maps/world.conf
+          grep -F '"first-area"' plugins/BlueMap/maps/world.fixed.conf
+          ! grep -F 'include "territories.conf"' plugins/BlueMap/maps/world.conf
+      - name: Upload installable plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: TerritoryMapSync
+          path: tools/territory-map-sync/target/TerritoryMapSync.jar
