@@ -17,6 +17,7 @@ public class Launcher {
 
     private static final String DISCORD_BOT_TOKEN = "DISCORD_BOT_TOKEN";
     private static final String DISCORDSRV_TOKEN = "DISCORDSRV_TOKEN";
+    private static final Path TERRITORY_SYNC_JAR = Path.of("plugins", "TerritoryMapSync.jar");
 
     private static final Path DATAPACK_SOURCE = Path.of("datapacks");
     private static final Path WORLD_DATAPACKS = Path.of("world", "datapacks");
@@ -36,6 +37,8 @@ public class Launcher {
             root.resolve(DATAPACK_SOURCE),
             root.resolve(WORLD_DATAPACKS)
         );
+        syncTerritoryBlueMapConfig(root);
+        ensureFixedBlueMapFallback(root);
 
         for (Path relativePath : PRE_START_DELETIONS) {
             Path target = root.resolve(relativePath);
@@ -68,6 +71,48 @@ public class Launcher {
         );
 
         System.exit(exitCode);
+    }
+
+    private static void syncTerritoryBlueMapConfig(Path root) {
+        Path jar = root.resolve(TERRITORY_SYNC_JAR);
+        if (!Files.isRegularFile(jar)) {
+            System.err.println("[Launcher] TerritoryMapSync.jar is not installed; keeping existing world.conf.");
+            return;
+        }
+        try {
+            Process process = new ProcessBuilder(
+                "java", "-jar", TERRITORY_SYNC_JAR.toString(), "--sync"
+            ).directory(root.toFile()).inheritIO().start();
+            int exit = process.waitFor();
+            if (exit != 0) {
+                System.err.println("[Launcher] Territory BlueMap sync exited with " + exit
+                    + "; Paper startup continues with existing world.conf.");
+            }
+        } catch (IOException e) {
+            System.err.println("[Launcher] Territory BlueMap sync failed; keeping world.conf: "
+                + e.getClass().getSimpleName());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("[Launcher] Territory BlueMap sync interrupted; keeping existing world.conf.");
+        }
+    }
+
+    private static void ensureFixedBlueMapFallback(Path root) throws IOException {
+        Path output = root.resolve("plugins/BlueMap/maps/world.conf");
+        if (Files.isRegularFile(output)) return;
+
+        Path fixed = root.resolve("config/bluemap/world.fixed.conf");
+        requireFile(fixed);
+        Files.createDirectories(output.getParent());
+        Path temporary = Files.createTempFile(output.getParent(), ".world-conf-fallback-", ".tmp");
+        try {
+            Files.copy(fixed, temporary, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(temporary, output,
+                StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } finally {
+            Files.deleteIfExists(temporary);
+        }
+        System.out.println("[Launcher] Initialized world.conf from fixed markers (territory sync unavailable).");
     }
 
     private static void configureDiscordSrvToken(

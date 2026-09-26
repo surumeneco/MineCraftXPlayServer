@@ -16,6 +16,8 @@
 
 # BlueMap runtime / rendered data
 /bluemap/
+# BlueMap map config is generated from config/bluemap/world.fixed.conf.
+/plugins/BlueMap/maps/world.conf
 
 # Paper runtime
 /.paper/
