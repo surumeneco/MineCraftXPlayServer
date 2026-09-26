@@ -1,0 +1,80 @@
+stats:
+  range-change-policy: preserve-value
+  max-health:
+    min: 10.0
+    max: 30.0
+    display: rank
+  size:
+    min: 1.5
+    max: 3.0
+    display: rank
+  ground-speed:
+    min: 3.0
+    max: 24.0
+    display: rank
+  air-speed:
+    min: 3.0
+    max: 24.0
+    display: rank
+  ascent-speed:
+    min: 1.0
+    max: 5.0
+    display: rank
+  jump-strength:
+    min: 1.0
+    max: 5.0
+    display: rank
+  step-height:
+    min: 0.5
+    max: 1.5
+    display: rank
+  stamina:
+    min: 2.0
+    max: 20.0
+    display: rank
+  stamina-recovery:
+    min: 0.5
+    max: 3.0
+    display: rank
+natural-spawn:
+  chance: 0.05
+  max-normalized: 1.5
+  distribution:
+    mean: 0.42
+    standard-deviation: 0.22
+breeding:
+  direct-inheritance-rate: 0.40
+  gaussian:
+    spread-factor: 0.25
+    minimum-standard-deviation: 0.03
+flight:
+  stamina-consumption-per-second: 1.0
+  recovery-delay-seconds: 1.0
+feeding:
+  heal-per-seed: 2.0
+road:
+  speed-multiplier: 1.25
+  check-interval-ticks: 5
+  blocks:
+    - minecraft:white_wool
+    - minecraft:orange_wool
+    - minecraft:magenta_wool
+    - minecraft:light_blue_wool
+    - minecraft:yellow_wool
+    - minecraft:lime_wool
+    - minecraft:pink_wool
+    - minecraft:gray_wool
+    - minecraft:light_gray_wool
+    - minecraft:cyan_wool
+    - minecraft:purple_wool
+    - minecraft:blue_wool
+    - minecraft:brown_wool
+    - minecraft:green_wool
+    - minecraft:red_wool
+    - minecraft:black_wool
+follow:
+  teleport-distance: 16.0
+storage:
+  persist-current-stamina: true
+commands:
+  info-max-results: 10
