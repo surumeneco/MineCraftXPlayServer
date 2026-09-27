@@ -31,7 +31,9 @@ jobs:
           test -f config/bluemap/world.fixed.conf
           test ! -f plugins/BlueMap/maps/world.conf
           test ! -f plugins/BlueMap/maps/territories.conf
-          grep -F '"first-area"' config/bluemap/world.fixed.conf
+          grep -F 'marker-sets: {' config/bluemap/world.fixed.conf
+          ! grep -F '"first-area"' config/bluemap/world.fixed.conf
+          ! grep -F '"ursa mountain"' config/bluemap/world.fixed.conf
           grep -F '/plugins/BlueMap/maps/world.conf' .gitignore
       - name: Upload installable plugin JAR
         uses: actions/upload-artifact@v4
