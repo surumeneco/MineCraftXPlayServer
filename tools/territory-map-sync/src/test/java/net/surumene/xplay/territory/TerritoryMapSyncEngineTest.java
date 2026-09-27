@@ -84,9 +84,11 @@ class TerritoryMapSyncEngineTest {
         String fixed = Files.readString(original, StandardCharsets.UTF_8);
         String result = TerritoryMapSyncEngine.merge(fixed, DYNAMIC);
         Config parsed = ConfigFactory.parseString(result).resolve();
-        assertTrue(parsed.hasPath("marker-sets.public-area.markers.first-area"));
-        assertTrue(parsed.hasPath("marker-sets.Reserve.markers.\"ursa mountain\""));
+        assertFalse(parsed.hasPath("marker-sets.public-area.markers.first-area"));
+        assertFalse(parsed.hasPath("marker-sets.Reserve.markers.\"ursa mountain\""));
         assertTrue(parsed.hasPath("marker-sets.public-area.markers.new-area"));
+        assertEquals(1, parsed.getObject("marker-sets.public-area.markers").size());
+        assertEquals(0, parsed.getObject("marker-sets.Reserve.markers").size());
     }
 
     @Test
