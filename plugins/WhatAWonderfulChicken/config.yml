@@ -36,6 +36,8 @@ stats:
     min: 0.5
     max: 3.0
     display: rank
+nature:
+  adjustment: 0.10
 natural-spawn:
   chance: 0.05
   max-normalized: 1.5
@@ -43,10 +45,19 @@ natural-spawn:
     mean: 0.42
     standard-deviation: 0.22
 breeding:
+  stat-mutation-rate: 0.01
+  genetic-mutation-rate: 0.01
   direct-inheritance-rate: 0.40
   gaussian:
     spread-factor: 0.25
     minimum-standard-deviation: 0.03
+traits:
+  haste-radius: 7.5
+  alert-radius: 20.0
+  alert-min-interval-ticks: 10
+  alert-max-interval-ticks: 80
+  egg-gold-chance: 0.05
+  egg-netherite-conditional-chance: 0.01
 flight:
   stamina-consumption-per-second: 1.0
   recovery-delay-seconds: 1.0

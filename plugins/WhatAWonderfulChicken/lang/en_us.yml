@@ -1,76 +1,153 @@
 plugin:
-  enabled: "What a Wonderful Chicken enabled."
-  reloaded: "What a Wonderful Chicken reloaded."
+  enabled: What a Wonderful Chicken enabled.
+  reloaded: What a Wonderful Chicken reloaded.
 error:
-  no_permission: "You do not have permission to use this command."
-  player_only: "This operation must be executed by a player."
-  no_target: "No Wonderful Chicken was found."
-  too_many_targets: "Too many targets (limit {0}). Narrow the selector."
-  invalid_number: "Invalid number: {0}"
-  invalid_value: "Invalid value: {0}"
-  invalid_config: "Configuration could not be applied: {0}"
-  inventory_busy: "Another player is currently using this Wonderful Chicken's cargo."
-  adult_only: "This equipment can only be used on an adult chicken."
-  invalid_equipment: "That item cannot be used in this equipment slot."
-  summon: "Summon failed: {0}"
+  no_permission: You do not have permission to use this command.
+  player_only: This operation must be executed by a player.
+  no_target: No Wonderful Chicken was found.
+  too_many_targets: Too many targets (limit {0}). Narrow the selector.
+  invalid_number: 'Invalid number: {0}'
+  invalid_value: 'Invalid value: {0}'
+  invalid_config: 'Configuration could not be applied: {0}'
+  inventory_busy: Another player is currently using this Wonderful Chicken's cargo.
+  adult_only: This equipment can only be used on an adult chicken.
+  invalid_equipment: That item cannot be used in this equipment slot.
+  summon: 'Summon failed: {0}'
 command:
-  reload_ok: "Reloaded."
-  config_set: "Changed {0} to {1}."
-  config_reset: "Reset {0} to its default value."
-  modified: "Modified {0} Wonderful Chicken(s)."
-  summoned: "Summoned Wonderful Chicken: {0}"
-  header: "--- Wonderful Chicken ---"
-  info_header: "Wonderful Chicken {0}/{1}"
-  info_uuid: "UUID"
-  info_bloodline: "Bloodline ID"
-  info_generation: "Generation"
-  info_behavior: "Behavior"
-  info_normalized: "Normalized"
-  info_current_stamina: "Current Stamina"
+  reload_ok: Reloaded.
+  config_set: Changed {0} to {1}.
+  config_reset: Reset {0} to its default value.
+  modified: Modified {0} Wonderful Chicken(s).
+  summoned: 'Summoned Wonderful Chicken: {0}'
+  header: '--- Wonderful Chicken ---'
+  info_header: Wonderful Chicken {0}/{1}
+  info_uuid: UUID
+  info_bloodline: Bloodline ID
+  info_generation: Generation
+  info_behavior: Behavior
+  info_normalized: Normalized
+  info_current_stamina: Current Stamina
 gui:
-  title: "Wonderful Chicken"
-  slot_carpet: "Riding Carpet"
-  slot_shulker: "Cargo Shulker Box"
-  slot_head: "Head Equipment"
-  reserved: "Reserved"
-  behavior: "Behavior: {0}"
-  info: "Individual Information"
-  pedigree: "Pedigree"
-  follow_target: "Follow target: {0}"
-  pedigree_id: "Bloodline ID: {0}"
-  generation: "Generation: {0}"
-  parent_a: "Parent A"
-  parent_b: "Parent B"
-  grandparent_aa: "Grandparent A-A"
-  grandparent_ab: "Grandparent A-B"
-  grandparent_ba: "Grandparent B-A"
-  grandparent_bb: "Grandparent B-B"
-  ancestor_none: "None"
-  ancestor_unnamed: "Unnamed Chicken"
-  ancestor_value: "{0} / generation {1} / {2}"
+  title: Wonderful Chicken
+  slot_carpet: Riding Carpet
+  slot_shulker: Cargo Shulker Box
+  slot_head: Head Equipment
+  reserved: Reserved
+  behavior: 'Behavior: {0}'
+  info: Individual Information
+  pedigree: Pedigree
+  follow_target: 'Follow target: {0}'
+  pedigree_id: 'Bloodline ID: {0}'
+  generation: 'Generation: {0}'
+  parent_a: Parent A
+  parent_b: Parent B
+  grandparent_aa: Grandparent A-A
+  grandparent_ab: Grandparent A-B
+  grandparent_ba: Grandparent B-A
+  grandparent_bb: Grandparent B-B
+  ancestor_none: None
+  ancestor_unnamed: Unnamed Chicken
+  ancestor_value: '{0} / generation {1} / {2}'
+  nature_label: Nature
+  trait_label: Trait
+  nature: 'Nature: {0}'
+  trait: 'Trait: {0}'
+  ancestor_genetics: 'Nature: {0} / Trait: {1}'
+  ancestor_unknown: Unknown
 behavior:
-  wander: "Wander"
-  wait: "Wait"
-  follow: "Follow"
+  wander: Wander
+  wait: Wait
+  follow: Follow
 stat:
-  max_health: "Max Health"
-  size: "Size"
-  ground_speed: "Ground Speed"
-  air_speed: "Air Speed"
-  ascent_speed: "Ascent Speed"
-  jump_strength: "Jump Strength"
-  step_height: "Step Height"
-  stamina: "Stamina"
-  stamina_recovery: "Stamina Recovery"
+  max_health: Max Health
+  size: Size
+  ground_speed: Ground Speed
+  air_speed: Air Speed
+  ascent_speed: Ascent Speed
+  jump_strength: Jump Strength
+  step_height: Step Height
+  stamina: Stamina
+  stamina_recovery: Stamina Recovery
 rank:
-  miserable: "Miserable"
-  very_low: "Very Low"
-  low: "Low"
-  slightly_low: "Slightly Low"
-  common: "Common"
-  slightly_high: "Slightly High"
-  high: "High"
-  very_high: "Very High"
-  legendary: "Legendary"
-  mythical: "Mythical"
-  impossible: "Impossible"
+  miserable: Miserable
+  very_low: Very Low
+  low: Low
+  slightly_low: Slightly Low
+  common: Common
+  slightly_high: Slightly High
+  high: High
+  very_high: Very High
+  legendary: Legendary
+  mythical: Mythical
+  impossible: Impossible
+nature:
+  majime:
+    name: Earnest
+    description: Always does their best with what they have.
+  sekaseka:
+    name: Restless
+    description: Loves running more than flying.
+  uwa_no_sora:
+    name: Daydreamer
+    description: Lost in thought, but comes alive in the sky.
+  awatenbo:
+    name: Scatterbrain
+    description: Always rushing up and down.
+  nebarizuyoi:
+    name: Persevering
+    description: Slow to climb, but keeps at it.
+  komame:
+    name: Diligent
+    description: Takes even long journeys one short flight at a time.
+  tamekomiya:
+    name: Hoarder
+    description: Does it all at once, then enjoys a long rest.
+  hanekkaeri:
+    name: Bouncy
+    description: Loves jumping more than running.
+  isoginbo:
+    name: Speedster
+    description: Might bump into walls, but keeps racing ahead.
+  kuishinbo:
+    name: Glutton
+    description: Big-bodied and sturdy.
+  tobashiya:
+    name: Daredevil
+    description: Hot-blooded and fond of quick battles.
+  jikkuri:
+    name: Methodical
+    description: Makes slow but steady progress.
+trait:
+  jikiden:
+    name: Direct Legacy
+    description: Always passes one of its abilities to its offspring.
+  hatenko:
+    name: Wild Card
+    description: Unexpected offspring are more likely to hatch.
+  yome:
+    name: Night Eyes
+    description: Riders can see better in the dark.
+  hinotori:
+    name: Firebird
+    description: Unfazed even by flames.
+  watage:
+    name: Downy
+    description: Falls even more slowly.
+  fukutsu:
+    name: Indomitable
+    description: Slowly heals from injuries.
+  saikutsu_ouen:
+    name: Mining Cheer
+    description: Players nearby mine faster.
+  chikarakobu:
+    name: Muscle
+    description: Riders feel stronger.
+  kin_no_tamago:
+    name: Golden Egg
+    description: Sometimes lays gold, and very rarely something finer.
+  mihariban:
+    name: Lookout
+    description: Calls out when danger approaches.
+  kuse_mashi:
+    name: Extra Quirky
+    description: Makes its nature's quirks stronger.
