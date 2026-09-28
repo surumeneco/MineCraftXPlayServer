@@ -15,7 +15,7 @@ git pull --ff-only origin develop
 git status --short
 ```
 
-`main` には `develop` の変更が未反映です。起動前にブランチを必ず確認してください。ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
+`main` / `develop` の役割は作業時点のGitHub上の状態を確認してください。起動前にブランチを必ず確認し、ローカルに未コミットの変更がある場合は、それを確認してから切り替え・更新します。
 
 ## ローカルで起動する
 
@@ -59,6 +59,56 @@ Java/Bedrock の公開には playit.gg、BlueMap の公開には Cloudflare Tunn
 
 BlueMap の内部 Web サーバーは環境別設定の待受IP・ポートを使用します。公開ドメインを使わず確認する場合は、BlueMap の実際の待受IPとVPSのSSH経路に合わせてポート転送を設定します。
 
+### 領地マーカー同期（起動時・手動）
+
+領地マーカーの正本はWebApp DBです。BlueMapは `plugins/BlueMap/maps/world.conf` を読みますが、
+このファイルは固定設定 `config/bluemap/world.fixed.conf` とWebAppの領地設定を合成して**自動生成**します。
+手動のマーカーや地形・描画設定は `config/bluemap/world.fixed.conf` に記入してください。生成済みの `world.conf` を
+次の生成の入力にすることはないため、削除・変更された領地は正しく入れ替わります。
+`world.conf` はGit管理外の生成物です。旧リポジトリから更新する際に
+ローカルだけで編集していた固定マーカーがあれば、**Pull前にworld.confをバックアップし、
+必要な変更をテンプレートへ移してから**起動してください。領地データ・ワールドは削除しません。
+
+#### 一度だけ必要な導入
+
+Paper 26.2 / Java 25とMavenを用意して、次を実行します。既存ワールドの削除・再生成は不要です。
+
+```powershell
+mvn -f tools/territory-map-sync/pom.xml -B clean package
+Copy-Item tools/territory-map-sync/target/TerritoryMapSync.jar plugins/TerritoryMapSync.jar -Force
+```
+
+本番Ubuntuではコピーの代わりに `cp` を使用してください。GitHub ActionsのCI artifactから
+同じJARを取得して `plugins/TerritoryMapSync.jar` に置くことも可能です。
+JARの導入・更新時だけPaperを再起動してください。導入後の領地更新には再起動は不要です。
+
+MinecraftルートのGit管理外 `.env` に設定します。値はWebAppの `TERRITORY_CONFIG_SECRET` と一致させます。
+
+```dotenv
+TERRITORY_CONFIG_URL=
+TERRITORY_CONFIG_SECRET=
+```
+
+LauncherはPaper起動前にこのJARの `--sync` を呼びます。JAR未導入、通信失敗、
+構文検証失敗のときは既存の `world.conf` を保持してPaper起動を続けます。
+`world.conf` がまだ存在しない場合は固定テンプレートから初期生成します。
+同期に成功すれば固定マーカーを保持したまま `world.conf` の内容が変わります。
+`territories.conf` は旧方式の生成物で、以降はBlueMapから参照しません。
+
+#### Paper稼働中の手動更新
+
+ゲーム内のOPから `/territorymap sync`、MinecraftコンソールやDiscordSRVの
+管理コンソールチャンネルから `territorymap sync` を実行します。
+通信と設定検証は非同期で行い、正常に設定を置換した場合だけ
+`bluemap reload light` を自動で実行します。DiscordSRVコンソールチャンネルへ
+コマンドを送る権限は、当該チャンネルへのアクセス制御で別途制限してください。
+プレイヤーからの実行は `territorymap.sync`（OPデフォルト）で制限します。
+
+`bluemap update` は地形タイル更新用であり、WebAppからの領地同期を実行しません。
+`world.conf` だけを変更して `bluemap reload light` を実行することもできますが、
+通常の手動反映では `territorymap sync` を使用してください。
+
+
 ## VPS へ接続する（VSCode のターミナルから）
 
 VSCode のローカルターミナルで、実際の SSH ユーザー・秘密鍵・Minecraft 側 VPS の IP を使用します。SSH 接続に Minecraft の playit.gg アドレスは使用しません。
@@ -97,6 +147,12 @@ sudo systemctl status minecraft.service --no-pager -l
 
 `Launcher.java` を編集した場合は、起動前にJDKの状況を確認してください。現行の `ExecStart=/usr/bin/java Launcher.java` はソースファイルをJavaで直接実行します。ログは `sudo journalctl -u minecraft.service -f` および `logs/latest.log` で確認します。Git管理外データやSecretをコミットしないでください。
 
+## 日次再起動
+
+本番Minecraftサーバーは毎日03:00（Asia/Tokyo）前後に自動再起動する構成です。02:55に `minecraft-maintenance.timer` が処理を開始し、RCONで5分前通知、10秒前からのカウントダウン、`save-all flush` を実行してから `minecraft.service` を再起動します。
+
+RCONのSecretと `server.properties` はGit管理外です。導入・更新・確認手順は **[deploy/daily-restart.md](deploy/daily-restart.md)** を参照してください。
+
 ## 管理対象とバックアップ
 
 - Git 管理: `Launcher.java`、`jvm.args`、`paper.jar`、`plugins/` 内の追跡対象、`datapacks/`、`deploy/` など。
@@ -104,4 +160,4 @@ sudo systemctl status minecraft.service --no-pager -l
 - `jvm.args` のメモリ指定は VPS の空きメモリも考慮し、起動前に確認してください。
 - root 運用に変更後は、Git操作もrootで実行し、元の `minecraft` ユーザーによるGit操作・ファイル生成と混用しません。
 
-構成の参照先: [サーバー構成](https://drive.google.com/file/d/1SndNSbyQX5HUEEE-ueQAofPO0bZ6jvto/view)、[接続関係](https://drive.google.com/file/d/1I1ZpsEXeJMAhAhrEcpgu3yhNP9FDhDzL/view)。
+構成の参照先: [サーバー構成](https://drive.google.com/file/d/1ufmtWfd-PDFU5Ac8709cApoY2vMogRZ8/view)、[接続関係](https://drive.google.com/file/d/1I1ZpsEXeJMAhAhrEcpgu3yhNP9FDhDzL/view)。

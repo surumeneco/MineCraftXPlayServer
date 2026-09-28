@@ -172,7 +172,7 @@ DiscordChatChannelRoleAliases: { "Developer": "Dev" }
 DiscordConsoleChannelLogRefreshRateInSeconds: 5
 DiscordConsoleChannelUsageLog: "Console-%date%.log"
 DiscordConsoleChannelBlacklistActsAsWhitelist: false
-DiscordConsoleChannelBlacklistedCommands: ["?"]
+DiscordConsoleChannelBlacklistedCommands: ["?", "op", "deop"]
 DiscordConsoleChannelFilters: { ".*(?i)async chat thread.*": "", ".*There are \\d+ (?:of a max of|out of maximum) \\d+ players online.*": "" }
 DiscordConsoleChannelLevels: [info, warn, error]
 DiscordConsoleChannelUseCodeBlocks: true

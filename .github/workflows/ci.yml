@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  verify-launcher:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Compile Launcher
+        run: javac Launcher.java
+      - name: Build and test TerritoryMapSync plugin
+        run: mvn -B -f tools/territory-map-sync/pom.xml clean verify
+      - name: Verify BlueMap fixed configuration source
+        shell: bash
+        run: |
+          test -f config/bluemap/world.fixed.conf
+          test ! -f plugins/BlueMap/maps/world.conf
+          test ! -f plugins/BlueMap/maps/territories.conf
+          grep -F 'marker-sets: {' config/bluemap/world.fixed.conf
+          ! grep -F '"first-area"' config/bluemap/world.fixed.conf
+          ! grep -F '"ursa mountain"' config/bluemap/world.fixed.conf
+          grep -F '/plugins/BlueMap/maps/world.conf' .gitignore
+      - name: Verify server-local plugin files stay untracked
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            plugins/LuckPerms/libs/example.jar \
+            plugins/LuckPerms/translations/repository/ja_JP.properties \
+            plugins/LuckPerms/contexts.json \
+            plugins/bStats/config.yml \
+            plugins/faststats/config.properties \
+            plugins/floodgate/linking.db \
+            plugins/floodgate/linking.db-wal \
+            plugins/floodgate/databases/linking.sqlite3-shm \
+            plugins/WorldEdit/schematics/build.schem \
+            plugins/WorldEdit/worldedit.log \
+            worldedit.log; do
+            git check-ignore -q --no-index "$path"
+          done
+          for path in \
+            plugins/LuckPerms-Bukkit-5.5.71.jar \
+            plugins/floodgate/config.yml \
+            plugins/WorldEdit/config.yml; do
+            if git check-ignore -q --no-index "$path"; then
+              echo "Required tracked config/JAR is ignored: $path" >&2
+              exit 1
+            fi
+          done
+          test -z "$(git ls-files -- \
+            plugins/LuckPerms/libs \
+            plugins/LuckPerms/translations/repository \
+            plugins/LuckPerms/contexts.json \
+            plugins/bStats/config.yml \
+            plugins/faststats/config.properties)"
+      - name: Upload installable plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: TerritoryMapSync
+          path: tools/territory-map-sync/target/TerritoryMapSync.jar

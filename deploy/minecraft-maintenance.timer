@@ -1,0 +1,10 @@
+[Unit]
+Description=Run daily Minecraft maintenance before 03:00 JST
+
+[Timer]
+OnCalendar=*-*-* 02:55:00 Asia/Tokyo
+AccuracySec=1s
+Unit=minecraft-maintenance.service
+
+[Install]
+WantedBy=timers.target
