@@ -89,3 +89,25 @@ plugins/WorldEdit/sessions/
 debug/
 
 jvm.args
+
+# Plugin instance metrics and server-specific identities
+/plugins/bStats/config.yml
+/plugins/faststats/config.properties
+
+# LuckPerms downloaded dependencies, translations and per-server contexts
+/plugins/LuckPerms/libs/
+/plugins/LuckPerms/translations/repository/
+/plugins/LuckPerms/contexts.json
+
+# Floodgate local SQLite account-link database (including sidecar files)
+/plugins/floodgate/**/*.db
+/plugins/floodgate/**/*.db-*
+/plugins/floodgate/**/*.sqlite
+/plugins/floodgate/**/*.sqlite-*
+/plugins/floodgate/**/*.sqlite3
+/plugins/floodgate/**/*.sqlite3-*
+
+# WorldEdit server-specific schematics and command logs
+/plugins/WorldEdit/schematics/
+/plugins/WorldEdit/worldedit.log
+/worldedit.log
