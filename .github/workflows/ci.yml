@@ -23,6 +23,10 @@ jobs:
           java-version: '25'
       - name: Compile Launcher
         run: javac Launcher.java
+      - name: Verify daily maintenance
+        run: |
+          bash -n deploy/minecraft-maintenance.sh
+          python3 -m unittest discover -s tests -p 'test_daily_maintenance.py' -v
       - name: Build and test TerritoryMapSync plugin
         run: mvn -B -f tools/territory-map-sync/pom.xml clean verify
       - name: Verify BlueMap fixed configuration source
