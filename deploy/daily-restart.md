@@ -2,6 +2,8 @@
 
 Minecraftサーバーを毎日03:00（Asia/Tokyo）前後に再起動するための手順。02:55にメンテナンス処理を開始し、5分前通知、10秒カウントダウン、`save-all flush` の後に `minecraft.service` を再起動する。
 
+RCONの応答待ち時間は通常の`/say`が5秒、`save-all flush`が120秒。`deploy/rcon.py`は環境変数`RCON_TIMEOUT_SECONDS`（秒、正の有限数）でコマンド単位のタイムアウトを受け取る。保存コマンドが120秒以内に正常応答しない場合、メンテナンス処理は失敗終了し、確認できない保存状態のまま再起動しない。再起動予定は日次のまま維持する。
+
 ## 1. RCON用Secretを設定する
 
 `/opt/minecraft/server/.env` にRCON設定を追加する。パスワードは英数字で十分に長いランダム値を使用し、Gitへ登録しない。

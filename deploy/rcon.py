@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import math
 import os
 import socket
 import struct
@@ -6,7 +7,7 @@ import sys
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 25575
-TIMEOUT_SECONDS = 5.0
+DEFAULT_TIMEOUT_SECONDS = 5.0
 
 
 class RconError(RuntimeError):
@@ -74,6 +75,17 @@ def execute(sock: socket.socket, command: str) -> str:
     return body
 
 
+def rcon_timeout_seconds() -> float:
+    raw = os.environ.get("RCON_TIMEOUT_SECONDS", str(DEFAULT_TIMEOUT_SECONDS))
+    try:
+        seconds = float(raw)
+    except ValueError as exc:
+        raise RconError("RCON_TIMEOUT_SECONDS must be a positive finite number") from exc
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise RconError("RCON_TIMEOUT_SECONDS must be a positive finite number")
+    return seconds
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print("Usage: rcon.py <command>", file=sys.stderr)
@@ -94,8 +106,14 @@ def main() -> int:
     command = " ".join(sys.argv[1:])
 
     try:
-        with socket.create_connection((host, port), timeout=TIMEOUT_SECONDS) as sock:
-            sock.settimeout(TIMEOUT_SECONDS)
+        timeout_seconds = rcon_timeout_seconds()
+    except RconError as exc:
+        print(f"RCON error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        with socket.create_connection((host, port), timeout=timeout_seconds) as sock:
+            sock.settimeout(timeout_seconds)
             authenticate(sock, password)
             response = execute(sock, command)
     except (OSError, RconError) as exc:
