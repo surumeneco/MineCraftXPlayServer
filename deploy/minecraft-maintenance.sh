@@ -26,7 +26,7 @@ if [[ ! -f "${RCON_CLIENT}" ]]; then
 fi
 
 rcon() {
-  "${PYTHON_BIN}" "${RCON_CLIENT}" "$1"
+  RCON_TIMEOUT_SECONDS="${2:-5}" "${PYTHON_BIN}" "${RCON_CLIENT}" "$1"
 }
 
 log "Sending five-minute restart notice."
@@ -45,7 +45,7 @@ for seconds in {10..1}; do
 done
 
 log "Flushing world saves."
-rcon "save-all flush"
+rcon "save-all flush" 120
 
 log "Restarting ${MINECRAFT_SERVICE}."
 systemctl restart "${MINECRAFT_SERVICE}"
