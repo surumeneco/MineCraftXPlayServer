@@ -1,4 +1,6 @@
 # CoreProtect Config
+# Global default: do not log events in worlds without an explicit override.
+# Logging is enabled only in world.yml, world_nether.yml, and world_the_end.yml.
 
 # CoreProtect is donationware. Obtain a donation key from coreprotect.net/donate/
 donation-key:
@@ -49,106 +51,106 @@ rollback-entities: true
 skip-generic-data: true
 
 # Logs blocks placed by players.
-block-place: true
+block-place: false
 
 # Logs blocks broken by players.
-block-break: true
+block-break: false
 
 # Logs blocks that break off of other blocks; for example, a sign or torch
 # falling off of a dirt block that a player breaks. This is required for
 # beds/doors to properly rollback.
-natural-break: true
+natural-break: false
 
 # Properly track block movement, such as sand or gravel falling.
-block-movement: true
+block-movement: false
 
 # Properly track blocks moved by pistons.
-pistons: true
+pistons: false
 
 # Logs blocks that burn up in a fire.
-block-burn: true
+block-burn: false
 
 # Logs when a block naturally ignites, such as from fire spreading.
-block-ignite: true
+block-ignite: false
 
 # Logs when fire naturally extinguishes.
 fire-extinguish: false
 
 # Logs explosions, such as TNT and Creepers.
-explosions: true
+explosions: false
 
 # Track when an entity changes a block, such as an Enderman destroying blocks.
-entity-change: true
+entity-change: false
 
 # Logs killed entities, such as killed cows and enderman.
-entity-kills: true
+entity-kills: false
 
 # Logs text on signs. If disabled, signs will be blank when rolled back.
-sign-text: true
+sign-text: false
 
 # Logs lava and water sources placed/removed by players who are using buckets.
-buckets: true
+buckets: false
 
 # Logs natural tree leaf decay.
-leaf-decay: true
+leaf-decay: false
 
 # Logs tree growth. Trees are linked to the player who planted the sapling.
-tree-growth: true
+tree-growth: false
 
 # Logs mushroom growth.
-mushroom-growth: true
+mushroom-growth: false
 
 # Logs natural vine growth.
-vine-growth: true
+vine-growth: false
 
 # Logs the spread of sculk blocks from sculk catalysts.
-sculk-spread: true
+sculk-spread: false
 
 # Logs when portals such as Nether portals generate naturally.
-portals: true
+portals: false
 
 # Logs water flow. If water destroys other blocks, such as torches,
 # this allows it to be properly rolled back.
-water-flow: true
+water-flow: false
 
 # Logs lava flow. If lava destroys other blocks, such as torches,
 # this allows it to be properly rolled back.
-lava-flow: true
+lava-flow: false
 
 # Allows liquid to be properly tracked and linked to players.
 # For example, if a player places water which flows and destroys torches,
 # it can all be properly restored by rolling back that single player.
-liquid-tracking: true
+liquid-tracking: false
 
 # Track item transactions, such as when a player takes items from
 # a chest, furnace, or dispenser.
-item-transactions: true
+item-transactions: false
 
 # Logs items dropped by players.
-item-drops: true
+item-drops: false
 
 # Logs items picked up by players.
-item-pickups: true
+item-pickups: false
 
 # Track all hopper transactions, such as when a hopper removes items from a
 # chest, furnace, or dispenser.
-hopper-transactions: true
+hopper-transactions: false
 
 # Track player interactions, such as when a player opens a door, presses
 # a button, or opens a chest. Player interactions can't be rolled back.
-player-interactions: true
+player-interactions: false
 
 # Logs messages that players send in the chat.
-player-messages: true
+player-messages: false
 
 # Logs all commands used by players.
-player-commands: true
+player-commands: false
 
 # Logs the logins and logouts of players.
-player-sessions: true
+player-sessions: false
 
 # Logs when a player changes their Minecraft username.
-username-changes: true
+username-changes: false
 
 # Logs changes made via the plugin "WorldEdit" if it's in use on your server.
-worldedit: true
+worldedit: false

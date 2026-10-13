@@ -111,3 +111,25 @@ jvm.args
 /plugins/WorldEdit/schematics/
 /plugins/WorldEdit/worldedit.log
 /worldedit.log
+
+# CoreProtect server-local database, transaction logs and identity/cache files.
+# Shared config.yml and explicit per-world YAML files remain tracked.
+/plugins/CoreProtect/*.db
+/plugins/CoreProtect/*.db-*
+/plugins/CoreProtect/*.db.*
+/plugins/CoreProtect/*.sqlite
+/plugins/CoreProtect/*.sqlite-*
+/plugins/CoreProtect/*.sqlite.*
+/plugins/CoreProtect/*.sqlite3
+/plugins/CoreProtect/*.sqlite3-*
+/plugins/CoreProtect/*.sqlite3.*
+/plugins/CoreProtect/*.duckdb
+/plugins/CoreProtect/*.duckdb.*
+/plugins/CoreProtect/*.wal
+/plugins/CoreProtect/*.wal.*
+/plugins/CoreProtect/.license
+/plugins/CoreProtect/.language
+/plugins/CoreProtect/database/
+/plugins/CoreProtect/backup/
+/plugins/CoreProtect/backups/
+/plugins/CoreProtect/logs/

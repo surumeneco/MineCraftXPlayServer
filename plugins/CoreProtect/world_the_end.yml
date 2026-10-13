@@ -1,0 +1,36 @@
+# CoreProtect per-world event logging configuration.
+# Only worlds with these explicit overrides are logged.
+# Other options inherit plugins/CoreProtect/config.yml.
+
+block-place: true
+block-break: true
+natural-break: true
+block-movement: true
+pistons: true
+block-burn: true
+block-ignite: true
+fire-extinguish: false
+explosions: true
+entity-change: true
+entity-kills: true
+sign-text: true
+buckets: true
+leaf-decay: true
+tree-growth: true
+mushroom-growth: true
+vine-growth: true
+sculk-spread: true
+portals: true
+water-flow: true
+lava-flow: true
+liquid-tracking: true
+item-transactions: true
+item-drops: true
+item-pickups: true
+hopper-transactions: true
+player-interactions: true
+player-messages: true
+player-commands: true
+player-sessions: true
+username-changes: true
+worldedit: true
