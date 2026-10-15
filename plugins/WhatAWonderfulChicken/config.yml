@@ -1,91 +1,179 @@
+# WWC 2.0 配布設定。確率は0.0～1.0（0.01 = 1%）、距離はblock、tickはゲームtickです。
+# reload／/wwc config変更は原則として次回評価から適用されます。
+# Genome・出生時Phenotype Snapshotは設定変更で書き換えず、実効値のみを再計算します。
+# WGLのGenome生成・Founder Target分布はこの1.x互換設定群とは独立しています。
+# 設定のないGenome合成パラメータはWGL Profile内で定義します。
+# 能力レンジの変更は表示・行動に反映しますが、既に生まれた個体の遺伝情報は不変です。
 stats:
+  # 旧データの数値レンジを変更した際の扱い。preserve-value=能力値を維持、
+  # preserve-normalized=正規化値を維持。Genome個体は出生時の正規化値を正として再投影します。
   range-change-policy: preserve-value
+  # 最大体力 (HP)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   max-health:
     min: 10.0
     max: 30.0
     display: rank
+  # 個体サイズ (scale)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   size:
     min: 1.5
     max: 3.0
     display: rank
+  # 地上移動速度 (block/秒)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   ground-speed:
     min: 3.0
     max: 24.0
     display: rank
+  # 飛行の水平速度 (block/秒)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   air-speed:
     min: 3.0
     max: 24.0
     display: rank
+  # 飛行の上昇速度 (block/秒)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   ascent-speed:
     min: 1.0
     max: 5.0
     display: rank
+  # 跳躍性能。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   jump-strength:
     min: 1.0
     max: 5.0
     display: rank
+  # 段差乗越性能 (block)。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   step-height:
     min: 0.5
     max: 1.5
     display: rank
+  # 飛行スタミナ容量。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   stamina:
     min: 2.0
     max: 20.0
     display: rank
+  # スタミナ回復速度。min/maxは正規化値0/1の投影先。min < max。
+  # displayはnone/value/rank/bothのいずれか。出生時Genome・rankは遡及変更しません。
   stamina-recovery:
     min: 0.5
     max: 3.0
     display: rank
 nature:
-  adjustment: 0.10
+  # 性格の現在実効能力倍率への寄与係数（0以上2/3未満）。大きくすると性格補正が強まります。
+  # クセ増しを含む補正の安全域。性格因子や出生時Genomeは変更しません。
+  adjustment: 0.1
 natural-spawn:
+  # NATURALスポーンしたバニラ鶏をWonderful Chicken化する抽選の確率（0.0～1.0）。
+  # 成功した新規Founderの能力TargetはWGL Profileの固定分布N(0.42,0.22)から生成します。
   chance: 0.05
+  # 以下は旧1.x方式との互換・管理用です。WGLの新規Founder合成範囲
+  # （自然個体0～0.75、トラップ0.5～1.5）を変更する設定ではありません。
   max-normalized: 1.5
+  # 以下の旧ガウス設定も、WGL Founder生成に直接作用しません。
   distribution:
     mean: 0.42
     standard-deviation: 0.22
 breeding:
+  # WGL繁殖ではHomology・組換え・変異をWGL側が管理します。
+  # 下記1.x由来の数値はGenomeの組換え率や新世代Genomeの能力抽選を変更しません。
+  # 過去のGenetics互換保存・移行を行う場合の挙動とは区別してください。
+  # 旧正規化能力への突然変異率。2.0のWGL繁殖には適用されません（0～1）。
   stat-mutation-rate: 0.01
+  # 旧Geneticsシャドーデータ・祖先復元の変異率（0～1）。WGL Genomeには非適用。
   genetic-mutation-rate: 0.01
-  direct-inheritance-rate: 0.40
+  # 旧方式の直伝確率（0～1）。WGLの直伝・破天荒はProfile側で制御します。
+  direct-inheritance-rate: 0.4
+  # 旧方式の繁殖能力ガウス分布用。WGLの組換え・変異率とは独立しています。
   gaussian:
     spread-factor: 0.25
     minimum-standard-deviation: 0.03
 traits:
+  # プレイ中に発現した特性が提供する効果の調整。出生済みGenome・発現特性は不変。
+  # 採掘応援の効果範囲（block、0超）。大きいほど遠方へ届きます。
   haste-radius: 7.5
+  # 見張り番が危険Mobを検出する水平探索範囲（block、0超）。
   alert-radius: 20.0
+  # 見張り番が近いMobへ鳴く最短間隔（tick、10以上）。
+  # maxは最小値以上。大きくすると警告間隔が長くなります。
   alert-min-interval-ticks: 10
   alert-max-interval-ticks: 80
+  # 金の卵特性が卵を金素材へ置換する確率（0～1）。強発現時は内部倍率あり。
   egg-gold-chance: 0.05
+  # 金素材化に成功した卵のネザライト化条件付き確率（0～1）。
   egg-netherite-conditional-chance: 0.01
+# 飛行中の現在スタミナの消費・回復。単位はスタミナ/秒、遅延は秒。
 flight:
   stamina-consumption-per-second: 1.0
   recovery-delay-seconds: 1.0
+# 種で与える回復体力（HP/個、0以上）。現存個体へ即時反映。
 feeding:
   heal-per-seed: 2.0
+# 指定の羊毛等の路面上の地上移動速度と、路面材質の判定。
 road:
+  # 路面上の速度倍率（0超）。大きくすると地上移動が速くなります。
   speed-multiplier: 1.25
+  # 路面判定の周期（tick、1以上）。短くすると反応が早く処理が増えます。
   check-interval-ticks: 5
+  # ブロックID一覧。変更後は走行路面判定に使われます。
   blocks:
-    - minecraft:white_wool
-    - minecraft:orange_wool
-    - minecraft:magenta_wool
-    - minecraft:light_blue_wool
-    - minecraft:yellow_wool
-    - minecraft:lime_wool
-    - minecraft:pink_wool
-    - minecraft:gray_wool
-    - minecraft:light_gray_wool
-    - minecraft:cyan_wool
-    - minecraft:purple_wool
-    - minecraft:blue_wool
-    - minecraft:brown_wool
-    - minecraft:green_wool
-    - minecraft:red_wool
-    - minecraft:black_wool
+  - minecraft:white_wool
+  - minecraft:orange_wool
+  - minecraft:magenta_wool
+  - minecraft:light_blue_wool
+  - minecraft:yellow_wool
+  - minecraft:lime_wool
+  - minecraft:pink_wool
+  - minecraft:gray_wool
+  - minecraft:light_gray_wool
+  - minecraft:cyan_wool
+  - minecraft:purple_wool
+  - minecraft:blue_wool
+  - minecraft:brown_wool
+  - minecraft:green_wool
+  - minecraft:red_wool
+  - minecraft:black_wool
+# 追従中のワープ条件。単位block。戦闘やGenomeには影響しません。
 follow:
   teleport-distance: 16.0
+# スタミナ残量をPDCへ保存するか。Genome・出生時能力には影響しません。
 storage:
   persist-current-stamina: true
+# 管理者コマンドの表示・探索制限。ゲーム内性能には影響しません。
 commands:
+  # /wwc infoの最大検索結果数（整数、1以上）。
   info-max-results: 10
+# 既存Genome / Phenotype Snapshotには遡及せず、現在実効値にのみ反映されるruntime設定です。
+runtime:
+  age:
+    # 生物学的時刻の基準ワールド。存在するワールド名を指定します。
+    # 別ワールドへの変更時は時間差を吸収して連続する日齢を保ちます。
+    clock-world: world
+    # 成体化後の成長・全盛・老化期間。単位: Minecraft game day (24000 tick)。
+    # 0以上。値を大きくするとそれぞれの段階が長くなります。reload後の計算から反映されます。
+    base-growth-game-days: 672.0
+    base-peak-duration-game-days: 2880.0
+    base-aging-duration-game-days: 4320.0
+    # 年齢補正の能力別感受性。0で年齢の影響なし。正の値が大きいほど影響が増えます。
+    # 怪我の重症度やGenomeの基礎能力値は変更しません。
+    sensitivity:
+      max-health: 0.7
+      size: 0.0
+      ground-speed: 1.0
+      air-speed: 0.8
+      ascent-speed: 1.0
+      jump-strength: 1.0
+      step-height: 0.4
+      stamina: 0.7
+      stamina-recovery: 0.5
+
+# チキントラップは新月かつ晴天のゲーム内時刻18000に一度だけ抽選します。
+# 時刻スキップでは抽選せず、23000に到達すれば残存個体は消滅します。
+chicken-trap:
+  # 0.01 = 1%。範囲 0.0～1.0。reload後の次の抽選から反映します。
+  spawn-chance: 0.01
+  # 待機中のSkeletonが近づくプレイヤーに反応する半径。単位:block、0より大きい値。
+  activation-radius-blocks: 10.0
