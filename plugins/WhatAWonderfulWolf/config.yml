@@ -1,0 +1,232 @@
+# What a Wonderful Wolf configuration.
+# Genomeそのものではなく、Wonderful WolfのTarget生成・Profile固有Genome設定・runtime balanceを設定します。
+# reload後も既存Phenotype Snapshotは再解読されません。各設定の適用時点は項目ごとのcommentを参照してください。
+config-version: 1
+
+# WWW/WWC共通のゲーム設定はWWCと同じトップレベル名を使用します。
+# 自然スポーンWolfをWonderful Wolfへ変換する確率。0.0～1.0。
+natural-spawn:
+  chance: 0.05
+# 性格による能力補正の強さ。出生済みのGenome/Snapshotには影響しません。
+nature:
+  adjustment: 0.1
+# 表現型に応じた実行時の効果。次回の評価から反映されます。
+traits:
+  # Aura型特性全体の半径。採掘応援専用のWWC haste-radiusとは効果範囲が異なります。
+  aura-radius-blocks: 7.5
+  # 見張り番の検知半径に行動距離を掛ける係数。
+  watchman-distance-multiplier: 1.5
+  # 見張り番の警告間隔。単位tick。min <= max。
+  alert-min-interval-ticks: 10
+  alert-max-interval-ticks: 80
+# ウルフトラップ: 満月深夜(18000)、嵐天、通常時刻進行の追加抽選と自然落雷の別系統。
+wolf-trap:
+  # 深夜の追加発生率。0.01 = 1%。起動時の次回判定から反映。0.0～1.0。
+  spawn-chance: 0.01
+  # 天候による自然落雷の際の抽選確率。0.05 = 5%。0.0～1.0。
+  lightning-chance: 0.05
+  # 特殊Evokerがプレイヤーの接近で起動する半径。単位block、0以上。
+  activation-radius-blocks: 10.0
+
+commands:
+  # /www info により一度に表示する最大個体数です。
+  info-max-results: 10
+
+founder-target:
+  natural:
+    abilities:
+      # 自然スポーンFounderの10能力Targetに使う正規分布です。
+      # 採用範囲0.0～0.5は仕様固定で、範囲外候補はclampせず再抽選します。
+      # reload後に新規生成するFounderから反映され、既存個体は再合成しません。
+      mean: 0.42
+      standard-deviation: 0.22
+  wolf-trap:
+    abilities:
+      # ウルフトラップFounderの10能力Targetに使う正規分布です。
+      # 採用範囲0.5～1.5は仕様固定で、範囲外候補はclampせず再抽選します。
+      mean: 0.42
+      standard-deviation: 0.22
+  personality:
+    # 6つの性格因子Targetに使う正規分布です。0.0～1.0外はclampせず再抽選します。
+    # 通常自然スポーンFounderとウルフトラップFounderで共通です。
+    mean: 0.5
+    standard-deviation: 0.1
+  development:
+    # 5つの発達・老化因子Targetに使う正規分布です。Scoreの意味範囲は0.0～1.0です。
+    mean: 0.5
+    standard-deviation: 0.2
+  relationship:
+    # 2つの関係性能Target Scoreに使う正規分布です。Scoreの意味範囲は0.0～1.0です。
+    mean: 0.5
+    standard-deviation: 0.2
+
+genome-profile:
+  # Wonderful Wolf固有のDecoder / Synthesizer / breeding policyです。
+  # reload成功後に新しいimmutable Profileへ置き換わり、既存Phenotype Snapshotは変更しません。
+  decoder:
+    personality:
+      # まじめ判定を先に行い、その後に突出/上位2因子分類を行います。
+      serious-max-score: 0.5
+      serious-spread: 0.115
+      dominant-gap: 0.085
+    trait:
+      # expression-threshold以上を通常特性候補とし、1位と2位の差がstrong-gap以上ならSTRONG判定します。
+      expression-threshold: 0.5
+      strong-gap: 0.125
+    injury:
+      # 潜在怪我の発現閾値、最大発症日齢、重症度rank範囲です。
+      # onset-max-game-daysの単位はMinecraft game dayです。
+      expression-threshold: 0.45
+      onset-max-game-days: 7872.0
+      severity-rank-min: 3.0
+      severity-rank-max: 6.0
+    divine:
+      # 神の系譜は両haplotypeの最低Scoreと合計Scoreの双方を満たした場合に発現します。
+      min-haplotype-score: 0.18
+      total-score: 0.65
+  
+  synthesizer:
+    # 以下は次回のFounder Genome合成から使用するProfile固有balanceです。
+    injury:
+      # 潜在怪我はTarget Phenotypeとは別の潜在Genome素材として生成します。
+      # blocks-lambdaはPoisson分布のλ、blocks-maxは1個体あたり上限、genes-per-blockは原則gene数です。
+      blocks-lambda: 1.5
+      blocks-max: 6
+      genes-per-block: 3
+      # 片側haplotypeの怪我負荷Target分布です。load-min～load-max外は再抽選します。
+      load-mean: 0.43
+      load-standard-deviation: 0.035
+      load-min: 0.3
+      load-max: 0.55
+      # 両haplotypeへ同一怪我Blockを供給する確率です。0.002 = 0.2%。
+      bilateral-probability: 0.002
+      # 発症時期・重症度の正規化Target分布です。
+      onset-mean: 0.5
+      onset-standard-deviation: 0.22
+      severity-mean: 0.5
+      severity-standard-deviation: 0.18
+    divine:
+      # ウルフトラップFounderの神性因子新規供給率です。0.30 = 30%。
+      supply-probability: 0.3
+      # 供給対象個体に生成する神性gene数の範囲と中心値です。
+      genes-min: 6
+      genes-center: 8
+      genes-max: 10
+      # 各神性geneを主haplotype側へ配置する確率です。
+      major-haplotype-probability: 0.93
+      # 神性gene 1個あたりの飽和前作用量dの範囲です。
+      gene-d-min: 0.06
+      gene-d-max: 0.16
+    extraordinary:
+      # 1.0超Target用Type 07 gene/blockのFounder生成量です。
+      genes-per-target-min: 4
+      genes-per-target-max: 6
+      blocks-per-target-min: 2
+      blocks-per-target-max: 3
+      # 通常能力側から規格外寄与側へ移す最大Target量です。
+      transfer-max: 0.15
+    # P×N型Target逆生成で使う負寄与による抑制率の抽選範囲です。
+    cancellation-min: 0.2
+    cancellation-max: 0.35
+    # 高Target時に数学的成立性を確保するため残すheadroomです。
+    high-target-headroom: 0.02
+    # 性格FounderのP-Q Targetへ隠して持たせる両符号相殺量Cの抽選範囲です。
+    personality-cancellation-min: 0.3
+    personality-cancellation-max: 0.5
+    genes-per-target:
+      # 各作用先へ生成するdirect gene数のmin / center / maxです。
+      ability-min: 8
+      ability-center: 9
+      ability-max: 12
+      personality-min: 4
+      personality-center: 6
+      personality-max: 8
+      development-min: 3
+      development-center: 5
+      development-max: 7
+      relationship-min: 4
+      relationship-center: 6
+      relationship-max: 8
+      trait-min: 1
+      trait-center: 2
+      trait-max: 4
+    # Founder各染色体長はBackbone基準長を平均とする正規分布から生成します。
+    # standard-deviation-ratioは基準長比、min/max-ratio外はclampせず再抽選します。
+    chromosome-length-standard-deviation-ratio: 0.05
+    chromosome-length-min-ratio: 0.9
+    chromosome-length-max-ratio: 1.1
+    # 半数体あたりdirect gene数の通常範囲とFounder hard capです。
+    direct-genes-soft-min: 180
+    direct-genes-soft-max: 220
+    direct-genes-hard-max: 256
+    # 半数体あたりregulation gene数の通常範囲・中心値・Founder hard capです。
+    regulation-genes-min: 35
+    regulation-genes-center: 40
+    regulation-genes-max: 50
+    regulation-genes-hard-max: 64
+    # Founderで認識可能なgene candidate数と領域比率の安全制約です。
+    recognizable-genes-hard-max: 320
+    recognizable-region-max-ratio: 0.65
+    noncoding-region-min-ratio: 0.35
+    relay:
+      # Type 08:06多面発現relayの付随率とsecondary contribution倍率範囲です。
+      attachment-min-ratio: 0.05
+      attachment-max-ratio: 0.08
+      normal-secondary-min-ratio: 0.15
+      normal-secondary-max-ratio: 0.45
+      strong-secondary-min-ratio: 0.6
+      strong-secondary-max-ratio: 0.75
+      # secondary contributionを正方向へ生成する比率です。
+      positive-ratio: 0.75
+  
+  breeding-policy:
+    # 次回開始する繁殖eventから反映し、進行中eventへ新旧設定を混在させません。
+    direct-inheritance:
+      # 直伝WEAK時に対象Genome Block側を優先する確率です。
+      weak-prefer-probability: 0.75
+      # 優先Block内部の通常crossover重み倍率です。
+      crossover-weight-inside-block: 0.25
+    wild-trait:
+      # 破天荒をWGL BreedingContextのmutation multiplierへ変換する倍率です。
+      weak-parent-multiplier: 2.0
+      strong-parent-multiplier: 4.0
+
+runtime:
+  # runtime設定はreload成功後の次回評価から既存個体にも反映されます。
+  # GenomeおよびPhenotype Snapshot自体は書き換えません。
+  combat:
+    # 撤退開始後、HPが回復しても戦闘へ戻らない最低時間です。単位はtickです。
+    retreat-min-ticks: 20
+  action-distance:
+    # 行動距離4段階の半径です。単位はblockで、narrow <= normal <= wide <= very-wideが必須です。
+    narrow-blocks: 5.0
+    normal-blocks: 10.0
+    wide-blocks: 20.0
+    very-wide-blocks: 30.0
+  wan-wand:
+    # ワンワンド手動対象指定の最大距離です。単位はblockです。
+    target-max-distance-blocks: 96.0
+  age:
+    # 生物学的ゲーム時刻の基準worldです。変更時は日齢が跳ばないようclock側でoffsetを引き継ぎます。
+    clock-world: world
+    # 成長期間、成体ピーク期間、老化期間です。単位はMinecraft game dayです。
+    base-growth-game-days: 672.0
+    base-peak-duration-game-days: 2880.0
+    base-aging-duration-game-days: 4320.0
+    sensitivity:
+      # 能力ごとの年齢補正感受性です。0は年齢補正なし、1超も許容します。
+      max-health: 0.7
+      defense: 0.5
+      patience: 0.3
+      size: 0.0
+      inventory: 0.0
+      ground-speed: 1.0
+      jump-strength: 1.0
+      step-height: 0.4
+      attack-damage: 0.8
+      attack-speed: 1.0
+  relationship:
+    # 追従・護衛中の受動好感度上昇抽選間隔です。単位はtickです。
+    passive-increase-interval-ticks: 1200
+    # 抽選1回あたりの上昇確率です。0.10 = 10%。
+    passive-increase-probability: 0.1

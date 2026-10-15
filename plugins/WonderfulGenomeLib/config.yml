@@ -1,0 +1,96 @@
+# Wonderful Genome Lib common engine configuration.
+# Consumer-specific Profile settings belong to the consumer plugin.
+config-version: 1
+
+engine:
+  homology:
+    # Maximum physical gap between consecutive anchors in one normal Homology Block.
+    max-anchor-gap-bits: 1024
+    # Local sequence window compared around a crossover candidate.
+    q-local-window-bits: 64
+    # Hamming-distance decay used by q_local = exp(-H / decay).
+    q-local-decay: 8.0
+
+  recombination:
+    # Extra crossover Poisson contribution starts above this mean chromosome length.
+    extra-crossover-start-bits: 4096
+    # lambda_extra = max(0, (L - start) / scale).
+    extra-crossover-scale-bits: 5120
+    # Distance scale for crossover interference.
+    interference-distance-bits: 384
+
+  mutation:
+    # Base point-mutation probability per bit per gamete.
+    point-per-bit-probability: 0.000002
+    structural:
+      # Independent event probabilities per gamete.
+      insertion-probability: 0.0015
+      deletion-probability: 0.0015
+      duplication-probability: 0.0010
+      inversion-probability: 0.0005
+      translocation-probability: 0.0003
+
+      # Structural event branch ratios.
+      insertion-random-sequence-ratio: 0.80
+      duplication-same-chromosome-ratio: 0.80
+      translocation-reciprocal-ratio: 0.25
+      translocation-other-chromosome-ratio: 0.75
+
+      # Truncated-geometric length parameters and hard sampling maxima.
+      insertion-length-p: 0.03125
+      insertion-length-max-bits: 1024
+      deletion-length-p: 0.03125
+      deletion-length-max-bits: 1024
+      duplication-length-p: 0.015625
+      duplication-length-max-bits: 2048
+      inversion-length-p: 0.015625
+      inversion-length-max-bits: 2048
+      translocation-length-p: 0.0078125
+      translocation-length-max-bits: 4096
+
+    nahr:
+      # Base NAHR probability per gamete before context/structure multipliers.
+      base-probability: 0.0005
+      # Maximum structure-derived NAHR multiplier.
+      structure-multiplier-max: 8.0
+
+  regulation:
+    # Final combined expression multiplier safety range.
+    final-multiplier-min: 0.20
+    final-multiplier-max: 3.00
+    # Exponent used when converting regulation strength to effective strength.
+    strength-exponent: 3.0
+    cis-enhancer-max: 1.50
+    cis-silencer-min: 0.50
+    trans-enhancer-max: 1.25
+    trans-silencer-min: 0.75
+    epistasis-enhancer-max: 1.75
+    epistasis-silencer-min: 0.35
+
+  local-rate-regulation:
+    # Recombination hotspot/coldspot factors and final local multiplier range.
+    recombination-hotspot-max: 3.0
+    recombination-coldspot-min: 0.25
+    recombination-final-min: 0.10
+    recombination-final-max: 4.0
+    # Point-mutation hotspot/coldspot factors and final local multiplier range.
+    point-hotspot-max: 6.0
+    point-coldspot-min: 0.20
+    point-final-min: 0.10
+    point-final-max: 8.0
+    # Structural-position hotspot/coldspot factors and final local multiplier range.
+    structural-hotspot-max: 4.0
+    structural-coldspot-min: 0.25
+    structural-final-min: 0.10
+    structural-final-max: 6.0
+
+  synthesizer:
+    # Normalized continuous-target convergence tolerance.
+    convergence-tolerance: 0.002
+    # Maximum local adjustment iterations before higher-level regeneration.
+    local-adjustment-max-iterations: 128
+    # Maximum relative size of one ordinary local-adjustment contribution.
+    local-adjustment-max-contribution-ratio: 0.05
+
+  # Maximum retries for one invalid mutation/recombination event before cancelling that event.
+  event-retry-max: 32
