@@ -3,13 +3,61 @@
 # reload後も既存Phenotype Snapshotは再解読されません。各設定の適用時点は項目ごとのcommentを参照してください。
 config-version: 1
 
+# Canonical ranges for normalized Genome ability scores (0=min, 1=max).
+# Values above 1 extrapolate. Existing Genome/Snapshot is never rewritten.
+# display modes: none, value, rank, both. Applies to the player GUI and detail;
+# administrative /www info always retains full debugging output.
+# Inventory slots remain limited to 45 after effective-value rounding.
+stats:
+  max-health:
+    min: 20.0
+    max: 60.0
+    display: rank
+  defense:
+    min: 0.0
+    max: 30.0
+    display: rank
+  patience:
+    min: 0.0
+    max: 1.0
+    display: rank
+  size:
+    min: 1.5
+    max: 3.0
+    display: rank
+  inventory:
+    min: 0.0
+    max: 30.0
+    display: rank
+  ground-speed:
+    min: 3.0
+    max: 24.0
+    display: rank
+  jump-strength:
+    min: 1.0
+    max: 5.0
+    display: rank
+  step-height:
+    min: 0.5
+    max: 1.5
+    display: rank
+  attack-damage:
+    min: 1.0
+    max: 10.0
+    display: rank
+  attack-speed:
+    min: 0.2
+    max: 2.0
+    display: rank
+
+
 # WWW/WWC共通のゲーム設定はWWCと同じトップレベル名を使用します。
 # 自然スポーンWolfをWonderful Wolfへ変換する確率。0.0～1.0。
 natural-spawn:
   chance: 0.05
 # 性格による能力補正の強さ。出生済みのGenome/Snapshotには影響しません。
 nature:
-  adjustment: 0.1
+  adjustment: 0.10
 # 表現型に応じた実行時の効果。次回の評価から反映されます。
 traits:
   # Aura型特性全体の半径。採掘応援専用のWWC haste-radiusとは効果範囲が異なります。
@@ -21,8 +69,8 @@ traits:
   alert-max-interval-ticks: 80
 # ウルフトラップ: 満月深夜(18000)、嵐天、通常時刻進行の追加抽選と自然落雷の別系統。
 wolf-trap:
-  # 深夜の追加発生率。0.01 = 1%。起動時の次回判定から反映。0.0～1.0。
-  spawn-chance: 0.01
+  # 深夜の追加発生率。0.10 = 10%。起動時の次回判定から反映。0.0～1.0。
+  spawn-chance: 0.10
   # 天候による自然落雷の際の抽選確率。0.05 = 5%。0.0～1.0。
   lightning-chance: 0.05
   # 特殊Evokerがプレイヤーの接近で起動する半径。単位block、0以上。
@@ -50,15 +98,15 @@ founder-target:
     # 6つの性格因子Targetに使う正規分布です。0.0～1.0外はclampせず再抽選します。
     # 通常自然スポーンFounderとウルフトラップFounderで共通です。
     mean: 0.5
-    standard-deviation: 0.1
+    standard-deviation: 0.10
   development:
     # 5つの発達・老化因子Targetに使う正規分布です。Scoreの意味範囲は0.0～1.0です。
     mean: 0.5
-    standard-deviation: 0.2
+    standard-deviation: 0.20
   relationship:
     # 2つの関係性能Target Scoreに使う正規分布です。Scoreの意味範囲は0.0～1.0です。
     mean: 0.5
-    standard-deviation: 0.2
+    standard-deviation: 0.20
 
 genome-profile:
   # Wonderful Wolf固有のDecoder / Synthesizer / breeding policyです。
@@ -66,12 +114,12 @@ genome-profile:
   decoder:
     personality:
       # まじめ判定を先に行い、その後に突出/上位2因子分類を行います。
-      serious-max-score: 0.5
+      serious-max-score: 0.500
       serious-spread: 0.115
       dominant-gap: 0.085
     trait:
       # expression-threshold以上を通常特性候補とし、1位と2位の差がstrong-gap以上ならSTRONG判定します。
-      expression-threshold: 0.5
+      expression-threshold: 0.50
       strong-gap: 0.125
     injury:
       # 潜在怪我の発現閾値、最大発症日齢、重症度rank範囲です。
@@ -84,7 +132,7 @@ genome-profile:
       # 神の系譜は両haplotypeの最低Scoreと合計Scoreの双方を満たした場合に発現します。
       min-haplotype-score: 0.18
       total-score: 0.65
-  
+
   synthesizer:
     # 以下は次回のFounder Genome合成から使用するProfile固有balanceです。
     injury:
@@ -96,18 +144,18 @@ genome-profile:
       # 片側haplotypeの怪我負荷Target分布です。load-min～load-max外は再抽選します。
       load-mean: 0.43
       load-standard-deviation: 0.035
-      load-min: 0.3
+      load-min: 0.30
       load-max: 0.55
       # 両haplotypeへ同一怪我Blockを供給する確率です。0.002 = 0.2%。
       bilateral-probability: 0.002
       # 発症時期・重症度の正規化Target分布です。
-      onset-mean: 0.5
+      onset-mean: 0.50
       onset-standard-deviation: 0.22
-      severity-mean: 0.5
+      severity-mean: 0.50
       severity-standard-deviation: 0.18
     divine:
       # ウルフトラップFounderの神性因子新規供給率です。0.30 = 30%。
-      supply-probability: 0.3
+      supply-probability: 0.30
       # 供給対象個体に生成する神性gene数の範囲と中心値です。
       genes-min: 6
       genes-center: 8
@@ -126,13 +174,13 @@ genome-profile:
       # 通常能力側から規格外寄与側へ移す最大Target量です。
       transfer-max: 0.15
     # P×N型Target逆生成で使う負寄与による抑制率の抽選範囲です。
-    cancellation-min: 0.2
+    cancellation-min: 0.20
     cancellation-max: 0.35
     # 高Target時に数学的成立性を確保するため残すheadroomです。
     high-target-headroom: 0.02
     # 性格FounderのP-Q Targetへ隠して持たせる両符号相殺量Cの抽選範囲です。
-    personality-cancellation-min: 0.3
-    personality-cancellation-max: 0.5
+    personality-cancellation-min: 0.30
+    personality-cancellation-max: 0.50
     genes-per-target:
       # 各作用先へ生成するdirect gene数のmin / center / maxです。
       ability-min: 8
@@ -153,8 +201,8 @@ genome-profile:
     # Founder各染色体長はBackbone基準長を平均とする正規分布から生成します。
     # standard-deviation-ratioは基準長比、min/max-ratio外はclampせず再抽選します。
     chromosome-length-standard-deviation-ratio: 0.05
-    chromosome-length-min-ratio: 0.9
-    chromosome-length-max-ratio: 1.1
+    chromosome-length-min-ratio: 0.90
+    chromosome-length-max-ratio: 1.10
     # 半数体あたりdirect gene数の通常範囲とFounder hard capです。
     direct-genes-soft-min: 180
     direct-genes-soft-max: 220
@@ -174,11 +222,11 @@ genome-profile:
       attachment-max-ratio: 0.08
       normal-secondary-min-ratio: 0.15
       normal-secondary-max-ratio: 0.45
-      strong-secondary-min-ratio: 0.6
+      strong-secondary-min-ratio: 0.60
       strong-secondary-max-ratio: 0.75
       # secondary contributionを正方向へ生成する比率です。
       positive-ratio: 0.75
-  
+
   breeding-policy:
     # 次回開始する繁殖eventから反映し、進行中eventへ新旧設定を混在させません。
     direct-inheritance:
@@ -229,4 +277,4 @@ runtime:
     # 追従・護衛中の受動好感度上昇抽選間隔です。単位はtickです。
     passive-increase-interval-ticks: 1200
     # 抽選1回あたりの上昇確率です。0.10 = 10%。
-    passive-increase-probability: 0.1
+    passive-increase-probability: 0.10

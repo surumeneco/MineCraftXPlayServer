@@ -133,3 +133,6 @@ jvm.args
 /plugins/CoreProtect/backup/
 /plugins/CoreProtect/backups/
 /plugins/CoreProtect/logs/
+
+/plugins/WhatAWonderfulChicken/biological-clock.yml
+/plugins/WhatAWonderfulWolf/biological-clock.yml
