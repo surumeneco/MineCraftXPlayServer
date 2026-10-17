@@ -1,9 +1,162 @@
-# WWC 2.0 配布設定。確率は0.0～1.0（0.01 = 1%）、距離はblock、tickはゲームtickです。
+# WWC 2.0.1 配布設定。確率は0.0～1.0（0.01 = 1%）、距離はblock、tickはゲームtickです。
 # reload／/wwc config変更は原則として次回評価から適用されます。
 # Genome・出生時Phenotype Snapshotは設定変更で書き換えず、実効値のみを再計算します。
-# WGLのGenome生成・Founder Target分布はこの1.x互換設定群とは独立しています。
-# 設定のないGenome合成パラメータはWGL Profile内で定義します。
+# WGLのGenome合成・Founder Target分布はgenome-profile/founder-target以下で設定します。
+# WGL共通の組換え・突然変異・相同性設定はWGL本体で管理します。
 # 能力レンジの変更は表示・行動に反映しますが、既に生まれた個体の遺伝情報は不変です。
+founder-target:
+  natural:
+    abilities:
+      # 自然スポーンFounderの9能力Targetに使う正規分布です。
+      # 採用範囲0.0～0.75は仕様固定で、範囲外候補はclampせず再抽選します。
+      # reload後に新規生成するFounderから反映され、既存個体は再合成しません。
+      mean: 0.42
+      standard-deviation: 0.22
+  chicken-trap:
+    abilities:
+      # チキントラップFounderの9能力Targetに使う正規分布です。
+      # 採用範囲0.5～1.5は仕様固定で、範囲外候補はclampせず再抽選します。
+      mean: 0.42
+      standard-deviation: 0.22
+  personality:
+    # 6つの性格因子Targetに使う正規分布です。0.0～1.0外はclampせず再抽選します。
+    # 通常自然スポーンFounderとチキントラップFounderで共通です。
+    mean: 0.5
+    standard-deviation: 0.10
+  development:
+    # 5つの発達・老化因子Targetに使う正規分布です。Scoreの意味範囲は0.0～1.0です。
+    mean: 0.5
+    standard-deviation: 0.20
+
+genome-profile:
+  # Wonderful Chicken固有のDecoder / Synthesizer / breeding policyです。
+  # reload成功後に新しいimmutable Profileへ置き換わり、既存Phenotype Snapshotは変更しません。
+  decoder:
+    personality:
+      # まじめ判定を先に行い、その後に突出/上位2因子分類を行います。
+      serious-max-score: 0.500
+      serious-spread: 0.115
+      dominant-gap: 0.085
+    trait:
+      # expression-threshold以上を通常特性候補とし、1位と2位の差がstrong-gap以上ならSTRONG判定します。
+      expression-threshold: 0.50
+      strong-gap: 0.125
+    injury:
+      # 潜在怪我の発現閾値、最大発症日齢、重症度rank範囲です。
+      # onset-max-game-daysの単位はMinecraft game dayです。
+      expression-threshold: 0.45
+      onset-max-game-days: 7872.0
+      severity-rank-min: 3.0
+      severity-rank-max: 6.0
+    divine:
+      # 神の系譜は両haplotypeの最低Scoreと合計Scoreの双方を満たした場合に発現します。
+      min-haplotype-score: 0.18
+      total-score: 0.65
+
+  synthesizer:
+    # 以下は次回のFounder Genome合成から使用するProfile固有balanceです。
+    injury:
+      # 潜在怪我はTarget Phenotypeとは別の潜在Genome素材として生成します。
+      # blocks-lambdaはPoisson分布のλ、blocks-maxは1個体あたり上限、genes-per-blockは原則gene数です。
+      blocks-lambda: 1.5
+      blocks-max: 6
+      genes-per-block: 3
+      # 片側haplotypeの怪我負荷Target分布です。load-min～load-max外は再抽選します。
+      load-mean: 0.43
+      load-standard-deviation: 0.035
+      load-min: 0.30
+      load-max: 0.55
+      # 両haplotypeへ同一怪我Blockを供給する確率です。0.002 = 0.2%。
+      bilateral-probability: 0.002
+      # 発症時期・重症度の正規化Target分布です。
+      onset-mean: 0.50
+      onset-standard-deviation: 0.22
+      severity-mean: 0.50
+      severity-standard-deviation: 0.18
+    divine:
+      # チキントラップFounderの神性因子新規供給率です。0.30 = 30%。
+      supply-probability: 0.30
+      # 供給対象個体に生成する神性gene数の範囲と中心値です。
+      genes-min: 6
+      genes-center: 8
+      genes-max: 10
+      # 各神性geneを主haplotype側へ配置する確率です。
+      major-haplotype-probability: 0.93
+      # 神性gene 1個あたりの飽和前作用量dの範囲です。
+      gene-d-min: 0.06
+      gene-d-max: 0.16
+    extraordinary:
+      # 1.0超Target用Type 07 gene/blockのFounder生成量です。
+      genes-per-target-min: 4
+      genes-per-target-max: 6
+      blocks-per-target-min: 2
+      blocks-per-target-max: 3
+      # 通常能力側から規格外寄与側へ移す最大Target量です。
+      transfer-max: 0.15
+    # P×N型Target逆生成で使う負寄与による抑制率の抽選範囲です。
+    cancellation-min: 0.20
+    cancellation-max: 0.35
+    # 高Target時に数学的成立性を確保するため残すheadroomです。
+    high-target-headroom: 0.02
+    # 性格FounderのP-Q Targetへ隠して持たせる両符号相殺量Cの抽選範囲です。
+    personality-cancellation-min: 0.30
+    personality-cancellation-max: 0.50
+    genes-per-target:
+      # 各作用先へ生成するdirect gene数のmin / center / maxです。
+      ability-min: 8
+      ability-center: 9
+      ability-max: 12
+      personality-min: 4
+      personality-center: 6
+      personality-max: 8
+      development-min: 3
+      development-center: 5
+      development-max: 7
+      trait-min: 1
+      trait-center: 2
+      trait-max: 4
+    # Founder各染色体長はBackbone基準長を平均とする正規分布から生成します。
+    # standard-deviation-ratioは基準長比、min/max-ratio外はclampせず再抽選します。
+    chromosome-length-standard-deviation-ratio: 0.05
+    chromosome-length-min-ratio: 0.90
+    chromosome-length-max-ratio: 1.10
+    # 半数体あたりdirect gene数の通常範囲とFounder hard capです。
+    direct-genes-soft-min: 180
+    direct-genes-soft-max: 220
+    direct-genes-hard-max: 256
+    # 半数体あたりregulation gene数の通常範囲・中心値・Founder hard capです。
+    regulation-genes-min: 35
+    regulation-genes-center: 40
+    regulation-genes-max: 50
+    regulation-genes-hard-max: 64
+    # Founderで認識可能なgene candidate数と領域比率の安全制約です。
+    recognizable-genes-hard-max: 320
+    recognizable-region-max-ratio: 0.65
+    noncoding-region-min-ratio: 0.35
+    relay:
+      # Type 08:06多面発現relayの付随率とsecondary contribution倍率範囲です。
+      attachment-min-ratio: 0.05
+      attachment-max-ratio: 0.08
+      normal-secondary-min-ratio: 0.15
+      normal-secondary-max-ratio: 0.45
+      strong-secondary-min-ratio: 0.60
+      strong-secondary-max-ratio: 0.75
+      # secondary contributionを正方向へ生成する比率です。
+      positive-ratio: 0.75
+
+  breeding-policy:
+    # 次回開始する繁殖eventから反映し、進行中eventへ新旧設定を混在させません。
+    direct-inheritance:
+      # 直伝WEAK時に対象Genome Block側を優先する確率です。
+      weak-prefer-probability: 0.75
+      # 優先Block内部の通常crossover重み倍率です。
+      crossover-weight-inside-block: 0.25
+    wild-trait:
+      # 破天荒をWGL BreedingContextのmutation multiplierへ変換する倍率です。
+      weak-parent-multiplier: 2.0
+      strong-parent-multiplier: 4.0
+
+
 stats:
   # 旧データの数値レンジを変更した際の扱い。preserve-value=能力値を維持、
   # preserve-normalized=正規化値を維持。Genome個体は出生時の正規化値を正として再投影します。
@@ -65,32 +218,15 @@ stats:
 nature:
   # 性格の現在実効能力倍率への寄与係数（0以上2/3未満）。大きくすると性格補正が強まります。
   # クセ増しを含む補正の安全域。性格因子や出生時Genomeは変更しません。
-  adjustment: 0.1
+  adjustment: 0.10
 natural-spawn:
   # NATURALスポーンしたバニラ鶏をWonderful Chicken化する抽選の確率（0.0～1.0）。
-  # 成功した新規Founderの能力TargetはWGL Profileの固定分布N(0.42,0.22)から生成します。
+  # Founderの能力Target分布はfounder-target.natural.abilitiesで指定します。
   chance: 0.05
-  # 以下は旧1.x方式との互換・管理用です。WGLの新規Founder合成範囲
-  # （自然個体0～0.75、トラップ0.5～1.5）を変更する設定ではありません。
-  max-normalized: 1.5
-  # 以下の旧ガウス設定も、WGL Founder生成に直接作用しません。
-  distribution:
-    mean: 0.42
-    standard-deviation: 0.22
+
 breeding:
-  # WGL繁殖ではHomology・組換え・変異をWGL側が管理します。
-  # 下記1.x由来の数値はGenomeの組換え率や新世代Genomeの能力抽選を変更しません。
-  # 過去のGenetics互換保存・移行を行う場合の挙動とは区別してください。
-  # 旧正規化能力への突然変異率。2.0のWGL繁殖には適用されません（0～1）。
-  stat-mutation-rate: 0.01
-  # 旧Geneticsシャドーデータ・祖先復元の変異率（0～1）。WGL Genomeには非適用。
+  # 旧Genetics shadow保存と祖先復元に使用中。WGLのGenome変異率とは無関係。
   genetic-mutation-rate: 0.01
-  # 旧方式の直伝確率（0～1）。WGLの直伝・破天荒はProfile側で制御します。
-  direct-inheritance-rate: 0.4
-  # 旧方式の繁殖能力ガウス分布用。WGLの組換え・変異率とは独立しています。
-  gaussian:
-    spread-factor: 0.25
-    minimum-standard-deviation: 0.03
 traits:
   # プレイ中に発現した特性が提供する効果の調整。出生済みGenome・発現特性は不変。
   # 採掘応援の効果範囲（block、0超）。大きいほど遠方へ届きます。
@@ -120,22 +256,22 @@ road:
   check-interval-ticks: 5
   # ブロックID一覧。変更後は走行路面判定に使われます。
   blocks:
-  - minecraft:white_wool
-  - minecraft:orange_wool
-  - minecraft:magenta_wool
-  - minecraft:light_blue_wool
-  - minecraft:yellow_wool
-  - minecraft:lime_wool
-  - minecraft:pink_wool
-  - minecraft:gray_wool
-  - minecraft:light_gray_wool
-  - minecraft:cyan_wool
-  - minecraft:purple_wool
-  - minecraft:blue_wool
-  - minecraft:brown_wool
-  - minecraft:green_wool
-  - minecraft:red_wool
-  - minecraft:black_wool
+    - minecraft:white_wool
+    - minecraft:orange_wool
+    - minecraft:magenta_wool
+    - minecraft:light_blue_wool
+    - minecraft:yellow_wool
+    - minecraft:lime_wool
+    - minecraft:pink_wool
+    - minecraft:gray_wool
+    - minecraft:light_gray_wool
+    - minecraft:cyan_wool
+    - minecraft:purple_wool
+    - minecraft:blue_wool
+    - minecraft:brown_wool
+    - minecraft:green_wool
+    - minecraft:red_wool
+    - minecraft:black_wool
 # 追従中のワープ条件。単位block。戦闘やGenomeには影響しません。
 follow:
   teleport-distance: 16.0
@@ -173,7 +309,7 @@ runtime:
 # チキントラップは新月かつ晴天のゲーム内時刻18000に一度だけ抽選します。
 # 時刻スキップでは抽選せず、23000に到達すれば残存個体は消滅します。
 chicken-trap:
-  # 0.01 = 1%。範囲 0.0～1.0。reload後の次の抽選から反映します。
-  spawn-chance: 0.01
+  # 0.10 = 10%。範囲 0.0～1.0。reload後の次の抽選から反映します。
+  spawn-chance: 0.10
   # 待機中のSkeletonが近づくプレイヤーに反応する半径。単位:block、0より大きい値。
   activation-radius-blocks: 10.0
