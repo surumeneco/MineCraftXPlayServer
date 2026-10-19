@@ -77,3 +77,24 @@ sudo journalctl -u minecraft.service --since today --no-pager
 ```
 
 Minecraftが02:55時点で停止している場合、メンテナンスサービスはMinecraftを起動せず、その日の処理を終了する。
+
+## WWC/WWW ワールド別Genomeレコード移行（導入後のみ有効化）
+
+WCL/WWC 2.1.0/WWW 1.1.0の実機確認完了後に限り、`/opt/minecraft/server/.env`へ
+`WONDERFUL_MIGRATION_ENABLED=1` を追加する（**既定0、無効**）。
+対応版が未導入の場合は変更しない。サーバー起動中かつカウントダウン終了後、
+`wwc storage migrate` → `wwc storage status` → `www storage migrate` →
+`www storage status` → `save-all flush` → 再起動、の順で実行する。
+
+移行コマンドとstatusはRCON/consoleへ次の形式の**単一行・装飾なし**テキストを返すこと。
+`WCL-MIGRATION job=<id> status=RUNNING|SUCCESS|FAILED processed=<n> copied=<n> skipped=<n> failed=<n>`
+`job`は呼出しごとに新規IDとし、後続statusと一致させる。startで完了済みでもstatusの照合を省略しない。
+RCONプロセスのexit 0だけでは成功扱いにしない。コマンド/応答が存在しない、job不一致、
+失敗または時間超過では**save-all flushと再起動を実行しない**。
+
+任意設定：`WONDERFUL_MIGRATION_MAX_POLLS=20`（1～99）、
+`WONDERFUL_MIGRATION_POLL_SECONDS=2`（0～9）。20×2秒×2種別で通常最大約80秒、
+RCONタイムアウトが加算されるためsystemdの`TimeoutStartSec=10min`を超えないように確認する。
+ロールバック時は`WONDERFUL_MIGRATION_ENABLED=0`に戻す。
+未ロード個体/ClickMobs Itemを含むすべての保存データが移行できた保証はない。
+旧保存ファイルは移行後も削除せず、regenの前に別領域へのバックアップを確保する。

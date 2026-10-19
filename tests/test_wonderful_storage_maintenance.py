@@ -9,8 +9,8 @@ SCRIPT = Path(__file__).resolve().parents[1] / "deploy" / "minecraft-maintenance
 
 
 class WonderfulMigrationMaintenanceTest(unittest.TestCase):
-    def run_script(self, wwc_status="WCL-MIGRATION status=SUCCESS processed=2 copied=1 skipped=1 failed=0",
-                   www_status="WCL-MIGRATION status=SUCCESS processed=3 copied=1 skipped=2 failed=0",
+    def run_script(self, wwc_status="WCL-MIGRATION job=job-123 status=SUCCESS processed=2 copied=1 skipped=1 failed=0",
+                   www_status="WCL-MIGRATION job=job-123 status=SUCCESS processed=3 copied=1 skipped=2 failed=0",
                    enabled="1"):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -33,7 +33,7 @@ exit 1
 printf '%s\\n' "$2" >> "$RCON_LOG"
 case "$2" in
   "wwc storage migrate"|"www storage migrate")
-    echo "WCL-MIGRATION status=RUNNING processed=0 copied=0 skipped=0 failed=0" ;;
+    echo "WCL-MIGRATION job=job-123 status=RUNNING processed=0 copied=0 skipped=0 failed=0" ;;
   "wwc storage status") printf '%s\\n' "$WWC_STATUS" ;;
   "www storage status") printf '%s\\n' "$WWW_STATUS" ;;
 esac
@@ -68,7 +68,7 @@ exit 0
 
     def test_failure_prevents_save_and_restart(self):
         status, commands, restarts = self.run_script(
-            wwc_status="WCL-MIGRATION status=FAILED processed=2 copied=0 skipped=0 failed=2")
+            wwc_status="WCL-MIGRATION job=job-123 status=FAILED processed=2 copied=0 skipped=0 failed=2")
         self.assertNotEqual(status, 0)
         self.assertNotIn("www storage migrate", commands)
         self.assertNotIn("save-all flush", commands)
@@ -76,13 +76,13 @@ exit 0
 
     def test_fake_success_text_or_rcon_exit_zero_is_not_enough(self):
         status, commands, restarts = self.run_script(
-            wwc_status="Unknown command. WCL-MIGRATION status=SUCCESS processed=0 failed=0")
+            wwc_status="Unknown command. WCL-MIGRATION job=job-123 status=SUCCESS processed=0 failed=0")
         self.assertNotEqual(status, 0)
         self.assertEqual(restarts, [])
 
     def test_running_never_finishes_cannot_restart(self):
         status, commands, restarts = self.run_script(
-            wwc_status="WCL-MIGRATION status=RUNNING processed=1 copied=0 skipped=0 failed=0")
+            wwc_status="WCL-MIGRATION job=job-123 status=RUNNING processed=1 copied=0 skipped=0 failed=0")
         self.assertNotEqual(status, 0)
         self.assertEqual(commands.count("wwc storage status"), 2)
         self.assertEqual(restarts, [])
