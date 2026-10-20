@@ -61,9 +61,9 @@ validate_migration_message() {
 
 migrate_consumer() {
   local prefix="$1"
-  local max_polls="${WONDERFUL_MIGRATION_MAX_POLLS:-20}"
+  local max_polls="${WONDERFUL_MIGRATION_MAX_POLLS:-300}"
   local interval="${WONDERFUL_MIGRATION_POLL_SECONDS:-2}"
-  if [[ ! "${max_polls}" =~ ^[1-9][0-9]?$ ]] || [[ ! "${interval}" =~ ^[0-9]$ ]]; then
+  if [[ ! "${max_polls}" =~ ^[1-9][0-9]{0,2}$ ]] || ((10#$max_polls > 300)) || [[ ! "${interval}" =~ ^[0-9]$ ]]; then
     log "Invalid migration polling settings."
     return 1
   fi

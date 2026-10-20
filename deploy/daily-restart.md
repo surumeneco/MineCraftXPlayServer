@@ -92,9 +92,10 @@ WCL/WWC 2.1.0/WWW 1.1.0の実機確認完了後に限り、`/opt/minecraft/serve
 RCONプロセスのexit 0だけでは成功扱いにしない。コマンド/応答が存在しない、job不一致、
 失敗または時間超過では**save-all flushと再起動を実行しない**。
 
-任意設定：`WONDERFUL_MIGRATION_MAX_POLLS=20`（1～99）、
-`WONDERFUL_MIGRATION_POLL_SECONDS=2`（0～9）。20×2秒×2種別で通常最大約80秒、
-RCONタイムアウトが加算されるためsystemdの`TimeoutStartSec=10min`を超えないように確認する。
+任意設定：`WONDERFUL_MIGRATION_MAX_POLLS=300`（1～300）、
+`WONDERFUL_MIGRATION_POLL_SECONDS=2`（0～9）。300×2秒×2種別で最長約20分（RCONや保存時間を除く）。
+通知待機5分も含めたsystemdの`TimeoutStartSec=30min`で制限し、未完了なら安全側で再起動を中止する。
 ロールバック時は`WONDERFUL_MIGRATION_ENABLED=0`に戻す。
-未ロード個体/ClickMobs Itemを含むすべての保存データが移行できた保証はない。
+現在ロード済みのワールド内のWGPFレコードはファイル単位でworldへミラーするため、ロードされていない個体やオフラインのアイテムからの復元参照も保全する。
+ただし、まだロードされていない別ワールド/外部アーカイブ、すでに失われた元データは対象外。
 旧保存ファイルは移行後も削除せず、regenの前に別領域へのバックアップを確保する。
