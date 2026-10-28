@@ -9,4 +9,4 @@ Group=root
 WorkingDirectory=/opt/minecraft/server
 EnvironmentFile=/opt/minecraft/server/.env
 ExecStart=/usr/bin/bash /opt/minecraft/server/deploy/minecraft-maintenance.sh
-TimeoutStartSec=10min
+TimeoutStartSec=30min
