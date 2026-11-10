@@ -1,0 +1,13 @@
+# Defaults for vanilla monsters and current Paper 26.2 server configuration.
+# If Paper's monster despawn ranges are changed, align these values manually.
+soft-distance: 32.0
+hard-distance: 128.0
+
+# Require 600 accumulated ticks beyond the soft distance before random rolls.
+minimum-far-ticks: 600
+
+# Equivalent per-tick probability: 1 / denominator.
+random-chance-denominator: 800
+
+# Scan loaded endermen every 20 ticks; aggregate probability for this interval.
+scan-interval-ticks: 20
