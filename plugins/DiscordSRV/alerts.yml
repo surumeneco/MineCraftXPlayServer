@@ -134,26 +134,37 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      [JOIN] {username} | {date} {time} | ${#event.player.world.name}
-      ${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ}
+      **[JOIN]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · {time}
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.player.PlayerQuitEvent
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      [QUIT] {username} | {date} {time} | ${#event.player.world.name}
-      ${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ}
+      **[QUIT]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · {time}
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.entity.PlayerDeathEvent
     Channel: "1572336862331281478"
     Async: false
-    Content: >-
-      [DEATH] ${#event.entity.name} | {date} {time} | ${#event.entity.world.name}
-      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
-      | cause=${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.entity.name}"
+      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity)}"
+    Embed:
+      Enabled: true
+      Color: "#D65050"
+      Description: >-
+        **[DEATH]** ${#event.entity.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 原因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · {time}
 
   # Actual cross-world teleports, including portals and /tp-/mvtp-induced transfers.
   # Origin and destination are taken from the event itself (not the command context).
@@ -163,16 +174,22 @@ Alerts:
     Conditions:
       - "#event.to != null && #event.from.world != #event.to.world"
     Content: >-
-      [WORLD] {username} | {date} {time} |
-      ${#event.from.world.name} (${#event.from.blockX},${#event.from.blockY},${#event.from.blockZ})
-      -> ${#event.to.world.name} (${#event.to.blockX},${#event.to.blockY},${#event.to.blockZ})
+      **[WORLD]** {username} · `${#event.from.world.name} (${#event.from.blockX},${#event.from.blockY},${#event.from.blockZ})` → `${#event.to.world.name} (${#event.to.blockX},${#event.to.blockY},${#event.to.blockZ})` · {time}
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   # Legacy Bukkit chat event; verify on the actual Paper 26.2 deployment.
   - Trigger: org.bukkit.event.player.AsyncPlayerChatEvent
     Channel: "1572336862331281478"
     Content: >-
-      [CHAT] {username} | {date} {time} | ${#event.message}
+      **[CHAT]** {username} · {time} │ ${#event.message}
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   # Incoming Discord -> game broadcast (DiscordSRV fires this only without chat hooks).
@@ -181,8 +198,11 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      [DISCORD BROADCAST REQUEST] ${#event.author.name} | {date} {time}
-      | ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
+      **[DISCORD BROADCAST REQUEST]** ${#event.author.name} · {time} │ ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
+    Webhook:
+      Enabled: true
+      Name: "${#event.author.name}"
+      AvatarUrl: "${#event.author.effectiveAvatarUrl}"
     Embed: { Enabled: false }
 
   - Trigger: [/tell, /msg, /w, /whisper, /minecraft:tell, /minecraft:msg, /minecraft:w, /minecraft:whisper]
@@ -190,8 +210,11 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      [TELL] ${#sender.name} -> ${#args.size() > 0 ? #args.get(0) : '(missing)'}
-      | {date} {time} | ${#args.size() > 0 ? #allArgs.substring(#args.get(0).length()).trim() : ''}
+      **[TELL]** ${#sender.name} → `${#args.size() > 0 ? #args.get(0) : '(missing)'}` · {time} │ ${#args.size() > 0 ? #allArgs.substring(#args.get(0).length()).trim() : ''}
+    Webhook:
+      Enabled: true
+      Name: "${#sender.name}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   # /say goes to player events only; it is explicitly omitted from command-log rules.
@@ -200,7 +223,11 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      [SAY] ${#sender.name} | {date} {time} | ${#allArgs}
+      **[SAY]** ${#sender.name} · {time} │ ${#allArgs}
+    Webhook:
+      Enabled: true
+      Name: "${#sender.name}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   # SUSPICIOUS ACTIONS: TNT placement / explosions; origins may be unknown.
@@ -209,51 +236,80 @@ Alerts:
     Async: false
     Conditions:
       - "#event.blockPlaced.type.name() == 'TNT'"
-    Content: >-
-      [TNT PLACE] {username} | {date} {time} | ${#event.blockPlaced.world.name}
-      ${#event.blockPlaced.x},${#event.blockPlaced.y},${#event.blockPlaced.z}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.player.name}"
+      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+    Embed:
+      Enabled: true
+      Color: "#E69F32"
+      Description: >-
+        **[TNT PLACE]** {username} · `${#event.blockPlaced.world.name} (${#event.blockPlaced.x},${#event.blockPlaced.y},${#event.blockPlaced.z})` · {time}
 
   - Trigger: org.bukkit.event.entity.EntityPlaceEvent
     Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity.type.name() == 'TNT_MINECART' && #event.player != null"
-    Content: >-
-      [TNT MINECART PLACE] ${#event.player.name} | {date} {time} | ${#event.entity.world.name}
-      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.player.name}"
+      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+    Embed:
+      Enabled: true
+      Color: "#E69F32"
+      Description: >-
+        **[TNT MINECART PLACE]** ${#event.player.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · {time}
 
   - Trigger: org.bukkit.event.entity.EntityExplodeEvent
     Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity != null && (#event.entity.type.name() == 'TNT' || #event.entity.type.name() == 'TNT_MINECART')"
-    Content: >-
-      [TNT EXPLODE] ${#event.entity.type.name()} | {date} {time} | ${#event.location.world.name}
-      ${#event.location.blockX},${#event.location.blockY},${#event.location.blockZ}
-      | source=${#event.entity.type.name() == 'TNT' ? (#event.entity.source != null ? #event.entity.source.type.name() : 'UNKNOWN') : 'UNKNOWN'}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "SERVER"
+      AvatarUrl: "{botavatarurl}"
+    Embed:
+      Enabled: true
+      Color: "#D65050"
+      Description: >-
+        **[TNT EXPLODE]** `${#event.entity.type.name()}` · `${#event.location.world.name} (${#event.location.blockX},${#event.location.blockY},${#event.location.blockZ})` · 発動元 `${#event.entity.type.name() == 'TNT' ? (#event.entity.source != null ? #event.entity.source.type.name() : 'UNKNOWN') : 'UNKNOWN'}` · {time}
 
   - Trigger: org.bukkit.event.block.BlockIgniteEvent
     Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.player != null"
-    Content: >-
-      [IGNITE] ${#event.player.name} | {date} {time} | ${#event.block.world.name}
-      ${#event.block.x},${#event.block.y},${#event.block.z} | cause=${#event.cause.name()}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.player.name}"
+      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+    Embed:
+      Enabled: true
+      Color: "#E69F32"
+      Description: >-
+        **[IGNITE]** ${#event.player.name} · `${#event.block.world.name} (${#event.block.x},${#event.block.y},${#event.block.z})` · 原因 `${#event.cause.name()}` · {time}
 
   - Trigger: org.bukkit.event.player.PlayerBucketEmptyEvent
     Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.bucket.name() == 'LAVA_BUCKET'"
-    Content: >-
-      [LAVA PLACE] {username} | {date} {time} | ${#event.blockClicked.world.name}
-      ${#event.blockClicked.getRelative(#event.blockFace).x},${#event.blockClicked.getRelative(#event.blockFace).y},${#event.blockClicked.getRelative(#event.blockFace).z}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
+    Embed:
+      Enabled: true
+      Color: "#E69F32"
+      Description: >-
+        **[LAVA PLACE]** {username} · `${#event.blockClicked.world.name} (${#event.blockClicked.getRelative(#event.blockFace).x},${#event.blockClicked.getRelative(#event.blockFace).y},${#event.blockClicked.getRelative(#event.blockFace).z})` · {time}
 
   # All named Mob deaths, whether a player is involved or not.
   - Trigger: org.bukkit.event.entity.EntityDeathEvent
@@ -261,12 +317,16 @@ Alerts:
     Async: false
     Conditions:
       - "#event.entity instanceof T(org.bukkit.entity.Mob) && #event.entity.customName != null"
-    Content: >-
-      [NAMED MOB DEATH] ${#event.entity.type.name()} '${#event.entity.customName}' | {date} {time}
-      | ${#event.entity.world.name} ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
-      | cause=${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}
-      | killer=${#event.entity.killer != null ? #event.entity.killer.name : 'UNKNOWN'}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.entity.killer != null ? #event.entity.killer.name : 'SERVER'}"
+      AvatarUrl: "${#event.entity.killer != null ? T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity.killer) : #jda.selfUser.effectiveAvatarUrl}"
+    Embed:
+      Enabled: true
+      Color: "#D65050"
+      Description: >-
+        **[NAMED MOB DEATH]** `${#event.entity.type.name()}` 「${#event.entity.customName}」 · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 死因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · 加害者 `${#event.entity.killer != null ? #event.entity.killer.name : 'UNKNOWN'}` · {time}
 
   # Common passive animal deaths attributed to a player, including projectile kills.
   # Named ones are handled by the rule above to avoid duplicate reports.
@@ -280,11 +340,16 @@ Alerts:
       - >-
         #event.entity instanceof T(org.bukkit.entity.Animals)
         || #event.entity.type.name().matches('ALLAY|BAT|COD|COPPER_GOLEM|DOLPHIN|GLOW_SQUID|HAPPY_GHAST|IRON_GOLEM|NAUTILUS|PUFFERFISH|SALMON|SNOW_GOLEM|SQUID|TADPOLE|TROPICAL_FISH|VILLAGER|WANDERING_TRADER|ZOMBIE_HORSE')
-    Content: >-
-      [PASSIVE MOB DEATH] ${#event.entity.killer.name} -> ${#event.entity.type.name()}
-      | {date} {time} | ${#event.entity.world.name}
-      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
-    Embed: { Enabled: false }
+    Content: ""
+    Webhook:
+      Enabled: true
+      Name: "${#event.entity.killer.name}"
+      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity.killer)}"
+    Embed:
+      Enabled: true
+      Color: "#D65050"
+      Description: >-
+        **[PASSIVE MOB DEATH]** ${#event.entity.killer.name} → `${#event.entity.type.name()}` · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · {time}
 
   # COMMAND LOG: player command requests (position of the player, NOT /execute's context).
   - Trigger: org.bukkit.event.player.PlayerCommandPreprocessEvent
@@ -301,9 +366,11 @@ Alerts:
       - >-
         !#event.message.toLowerCase().matches('(?s)^/(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
     Content: >-
-      [COMMAND] {username} | {date} {time} | ${#player.world.name}
-      ${#player.location.blockX},${#player.location.blockY},${#player.location.blockZ}
-      | ${#event.message}
+      **[COMMAND]** {username} · `${#player.world.name} (${#player.location.blockX},${#player.location.blockY},${#player.location.blockZ})` · `${#event.message}` · {time}
+    Webhook:
+      Enabled: true
+      Name: "{username}"
+      AvatarUrl: "{embedavatarurl}"
     Embed: { Enabled: false }
 
   # Direct server console only. RCON uses RemoteServerCommandEvent (excluded).
@@ -320,5 +387,9 @@ Alerts:
       - >-
         !#event.command.toLowerCase().matches('(?s)^(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
     Content: >-
-      [CONSOLE COMMAND] CONSOLE | {date} {time} | ${#event.command}
+      **[CONSOLE COMMAND]** CONSOLE · `${#event.command}` · {time}
+    Webhook:
+      Enabled: true
+      Name: "CONSOLE"
+      AvatarUrl: "{botavatarurl}"
     Embed: { Enabled: false }
