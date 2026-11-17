@@ -159,7 +159,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.entity.name}"
-      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity)}"
+      AvatarUrl: "https://mc-heads.net/avatar/${#event.entity.uniqueId}/64.png"
     Embed:
       Enabled: true
       Color: "#D65050"
@@ -240,7 +240,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.player.name}"
-      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+      AvatarUrl: "https://mc-heads.net/avatar/${#event.player.uniqueId}/64.png"
     Embed:
       Enabled: true
       Color: "#E69F32"
@@ -256,7 +256,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.player.name}"
-      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+      AvatarUrl: "https://mc-heads.net/avatar/${#event.player.uniqueId}/64.png"
     Embed:
       Enabled: true
       Color: "#E69F32"
@@ -288,7 +288,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.player.name}"
-      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.player)}"
+      AvatarUrl: "https://mc-heads.net/avatar/${#event.player.uniqueId}/64.png"
     Embed:
       Enabled: true
       Color: "#E69F32"
@@ -321,7 +321,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.entity.killer != null ? #event.entity.killer.name : 'SERVER'}"
-      AvatarUrl: "${#event.entity.killer != null ? T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity.killer) : #jda.selfUser.effectiveAvatarUrl}"
+      AvatarUrl: "${#event.entity.killer != null ? 'https://mc-heads.net/avatar/' + #event.entity.killer.uniqueId + '/64.png' : #jda.selfUser.effectiveAvatarUrl}"
     Embed:
       Enabled: true
       Color: "#D65050"
@@ -344,7 +344,7 @@ Alerts:
     Webhook:
       Enabled: true
       Name: "${#event.entity.killer.name}"
-      AvatarUrl: "${T(github.scarsz.discordsrv.DiscordSRV).getAvatarUrl(#event.entity.killer)}"
+      AvatarUrl: "https://mc-heads.net/avatar/${#event.entity.killer.uniqueId}/64.png"
     Embed:
       Enabled: true
       Color: "#D65050"
