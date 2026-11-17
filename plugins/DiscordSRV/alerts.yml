@@ -121,3 +121,204 @@ Alerts:
   #    Author:
   #      ImageUrl: "{embedavatarurl}"
   #      Name: "* {username} ${#allArgs}"
+
+  # === XPlayServer: management monitoring (DiscordSRV 1.30.5) ===
+  # Destinations are intentionally NONEXISTENT numeric IDs until the operator fills them:
+  #   __SET_PLAYER_EVENTS_ID__ = player-events, __SET_SUSPICIOUS_ACTIONS_ID__ = suspicious-actions, __SET_COMMAND_LOG_ID__ = command-log.
+  # Replace all three placeholders with the corresponding numeric Discord channel IDs after pulling.
+  # They are NOT mapped to 'global' and must never be replaced with a public channel ID.
+  # The existing config.yml chat/console outputs remain unchanged.
+
+  # PLAYER EVENTS: join / quit / death with location
+  - Trigger: org.bukkit.event.player.PlayerJoinEvent
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [JOIN] {username} | {date} {time} | ${#event.player.world.name}
+      ${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.player.PlayerQuitEvent
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [QUIT] {username} | {date} {time} | ${#event.player.world.name}
+      ${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.entity.PlayerDeathEvent
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [DEATH] ${#event.entity.name} | {date} {time} | ${#event.entity.world.name}
+      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
+      | cause=${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}
+    Embed: { Enabled: false }
+
+  # Actual cross-world teleports, including portals and /tp-/mvtp-induced transfers.
+  # Origin and destination are taken from the event itself (not the command context).
+  - Trigger: [org.bukkit.event.player.PlayerTeleportEvent, org.bukkit.event.player.PlayerPortalEvent]
+    Channel: "1572336862331281478"
+    Async: false
+    Conditions:
+      - "#event.to != null && #event.from.world != #event.to.world"
+    Content: >-
+      [WORLD] {username} | {date} {time} |
+      ${#event.from.world.name} (${#event.from.blockX},${#event.from.blockY},${#event.from.blockZ})
+      -> ${#event.to.world.name} (${#event.to.blockX},${#event.to.blockY},${#event.to.blockZ})
+    Embed: { Enabled: false }
+
+  # Legacy Bukkit chat event; verify on the actual Paper 26.2 deployment.
+  - Trigger: org.bukkit.event.player.AsyncPlayerChatEvent
+    Channel: "1572336862331281478"
+    Content: >-
+      [CHAT] {username} | {date} {time} | ${#event.message}
+    Embed: { Enabled: false }
+
+  # Incoming Discord -> game broadcast (DiscordSRV fires this only without chat hooks).
+  # This records the message *before* broadcasting; final receipt is not guaranteed.
+  - Trigger: github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [DISCORD BROADCAST REQUEST] ${#event.author.name} | {date} {time}
+      | ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
+    Embed: { Enabled: false }
+
+  - Trigger: [/tell, /msg, /w, /whisper, /minecraft:tell, /minecraft:msg, /minecraft:w, /minecraft:whisper]
+    IgnoreCancelled: false
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [TELL] ${#sender.name} -> ${#args.size() > 0 ? #args.get(0) : '(missing)'}
+      | {date} {time} | ${#args.size() > 0 ? #allArgs.substring(#args.get(0).length()).trim() : ''}
+    Embed: { Enabled: false }
+
+  # /say goes to player events only; it is explicitly omitted from command-log rules.
+  - Trigger: [/say, /minecraft:say]
+    IgnoreCancelled: false
+    Channel: "1572336862331281478"
+    Async: false
+    Content: >-
+      [SAY] ${#sender.name} | {date} {time} | ${#allArgs}
+    Embed: { Enabled: false }
+
+  # SUSPICIOUS ACTIONS: TNT placement / explosions; origins may be unknown.
+  - Trigger: org.bukkit.event.block.BlockPlaceEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.blockPlaced.type.name() == 'TNT'"
+    Content: >-
+      [TNT PLACE] {username} | {date} {time} | ${#event.blockPlaced.world.name}
+      ${#event.blockPlaced.x},${#event.blockPlaced.y},${#event.blockPlaced.z}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.entity.EntityPlaceEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.entity.type.name() == 'TNT_MINECART' && #event.player != null"
+    Content: >-
+      [TNT MINECART PLACE] ${#event.player.name} | {date} {time} | ${#event.entity.world.name}
+      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.entity.EntityExplodeEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.entity != null && (#event.entity.type.name() == 'TNT' || #event.entity.type.name() == 'TNT_MINECART')"
+    Content: >-
+      [TNT EXPLODE] ${#event.entity.type.name()} | {date} {time} | ${#event.location.world.name}
+      ${#event.location.blockX},${#event.location.blockY},${#event.location.blockZ}
+      | source=${#event.entity.type.name() == 'TNT' ? (#event.entity.source != null ? #event.entity.source.type.name() : 'UNKNOWN') : 'UNKNOWN'}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.block.BlockIgniteEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.player != null"
+    Content: >-
+      [IGNITE] ${#event.player.name} | {date} {time} | ${#event.block.world.name}
+      ${#event.block.x},${#event.block.y},${#event.block.z} | cause=${#event.cause.name()}
+    Embed: { Enabled: false }
+
+  - Trigger: org.bukkit.event.player.PlayerBucketEmptyEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.bucket.name() == 'LAVA_BUCKET'"
+    Content: >-
+      [LAVA PLACE] {username} | {date} {time} | ${#event.blockClicked.world.name}
+      ${#event.blockClicked.getRelative(#event.blockFace).x},${#event.blockClicked.getRelative(#event.blockFace).y},${#event.blockClicked.getRelative(#event.blockFace).z}
+    Embed: { Enabled: false }
+
+  # All named Mob deaths, whether a player is involved or not.
+  - Trigger: org.bukkit.event.entity.EntityDeathEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.entity instanceof T(org.bukkit.entity.Mob) && #event.entity.customName != null"
+    Content: >-
+      [NAMED MOB DEATH] ${#event.entity.type.name()} '${#event.entity.customName}' | {date} {time}
+      | ${#event.entity.world.name} ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
+      | cause=${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}
+      | killer=${#event.entity.killer != null ? #event.entity.killer.name : 'UNKNOWN'}
+    Embed: { Enabled: false }
+
+  # Common passive animal deaths attributed to a player, including projectile kills.
+  # Named ones are handled by the rule above to avoid duplicate reports.
+  # Includes Paper 26.2 friendly non-Animals types; new entity types require list review.
+  - Trigger: org.bukkit.event.entity.EntityDeathEvent
+    Channel: "1572337028412997713"
+    Async: false
+    Conditions:
+      - "#event.entity.killer != null && #event.entity.customName == null"
+      # Animals covers usual animal mobs; explicit type names cover friendly mobs outside that interface.
+      - >-
+        #event.entity instanceof T(org.bukkit.entity.Animals)
+        || #event.entity.type.name().matches('ALLAY|BAT|COD|COPPER_GOLEM|DOLPHIN|GLOW_SQUID|HAPPY_GHAST|IRON_GOLEM|NAUTILUS|PUFFERFISH|SALMON|SNOW_GOLEM|SQUID|TADPOLE|TROPICAL_FISH|VILLAGER|WANDERING_TRADER|ZOMBIE_HORSE')
+    Content: >-
+      [PASSIVE MOB DEATH] ${#event.entity.killer.name} -> ${#event.entity.type.name()}
+      | {date} {time} | ${#event.entity.world.name}
+      ${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ}
+    Embed: { Enabled: false }
+
+  # COMMAND LOG: player command requests (position of the player, NOT /execute's context).
+  - Trigger: org.bukkit.event.player.PlayerCommandPreprocessEvent
+    IgnoreCancelled: false
+    Channel: "1572337247431168060"
+    Async: false
+    Conditions:
+      # Exclude tell-family, /say, and everyday GSit posture controls (not GSit administration).
+      - >-
+        !#event.message.toLowerCase().matches('(?s)^/(?:[a-z0-9_.-]+:)?(?:tell|msg|w|whisper|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
+      # Account linking/unlinking is excluded, DiscordSRV administration is not.
+      - >-
+        !#event.message.toLowerCase().matches('(?s)^/(?:[a-z0-9_.-]+:)?(?:discord|discordsrv)\s+(?:link|unlink)(?:\s|$).*')
+      - >-
+        !#event.message.toLowerCase().matches('(?s)^/(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
+    Content: >-
+      [COMMAND] {username} | {date} {time} | ${#player.world.name}
+      ${#player.location.blockX},${#player.location.blockY},${#player.location.blockZ}
+      | ${#event.message}
+    Embed: { Enabled: false }
+
+  # Direct server console only. RCON uses RemoteServerCommandEvent (excluded).
+  - Trigger: org.bukkit.event.server.ServerCommandEvent
+    IgnoreCancelled: false
+    Channel: "1572337247431168060"
+    Async: false
+    Conditions:
+      - "#event.getClass().getName() == 'org.bukkit.event.server.ServerCommandEvent'"
+      - >-
+        !#event.command.toLowerCase().matches('(?s)^(?:[a-z0-9_.-]+:)?(?:tell|msg|w|whisper|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
+      - >-
+        !#event.command.toLowerCase().matches('(?s)^(?:[a-z0-9_.-]+:)?(?:discord|discordsrv)\s+(?:link|unlink)(?:\s|$).*')
+      - >-
+        !#event.command.toLowerCase().matches('(?s)^(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
+    Content: >-
+      [CONSOLE COMMAND] CONSOLE | {date} {time} | ${#event.command}
+    Embed: { Enabled: false }
