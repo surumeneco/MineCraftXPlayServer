@@ -131,7 +131,7 @@ Alerts:
 
   # PLAYER EVENTS: join / quit / death with location
   - Trigger: org.bukkit.event.player.PlayerJoinEvent
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [JOIN] {username} | {date} {time} | ${#event.player.world.name}
@@ -139,7 +139,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.player.PlayerQuitEvent
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [QUIT] {username} | {date} {time} | ${#event.player.world.name}
@@ -147,7 +147,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.entity.PlayerDeathEvent
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [DEATH] ${#event.entity.name} | {date} {time} | ${#event.entity.world.name}
@@ -158,7 +158,7 @@ Alerts:
   # Actual cross-world teleports, including portals and /tp-/mvtp-induced transfers.
   # Origin and destination are taken from the event itself (not the command context).
   - Trigger: [org.bukkit.event.player.PlayerTeleportEvent, org.bukkit.event.player.PlayerPortalEvent]
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Conditions:
       - "#event.to != null && #event.from.world != #event.to.world"
@@ -170,7 +170,7 @@ Alerts:
 
   # Legacy Bukkit chat event; verify on the actual Paper 26.2 deployment.
   - Trigger: org.bukkit.event.player.AsyncPlayerChatEvent
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Content: >-
       [CHAT] {username} | {date} {time} | ${#event.message}
     Embed: { Enabled: false }
@@ -178,7 +178,7 @@ Alerts:
   # Incoming Discord -> game broadcast (DiscordSRV fires this only without chat hooks).
   # This records the message *before* broadcasting; final receipt is not guaranteed.
   - Trigger: github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [DISCORD BROADCAST REQUEST] ${#event.author.name} | {date} {time}
@@ -187,7 +187,7 @@ Alerts:
 
   - Trigger: [/tell, /msg, /w, /whisper, /minecraft:tell, /minecraft:msg, /minecraft:w, /minecraft:whisper]
     IgnoreCancelled: false
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [TELL] ${#sender.name} -> ${#args.size() > 0 ? #args.get(0) : '(missing)'}
@@ -197,7 +197,7 @@ Alerts:
   # /say goes to player events only; it is explicitly omitted from command-log rules.
   - Trigger: [/say, /minecraft:say]
     IgnoreCancelled: false
-    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Channel: "1572336862331281478"
     Async: false
     Content: >-
       [SAY] ${#sender.name} | {date} {time} | ${#allArgs}
@@ -205,7 +205,7 @@ Alerts:
 
   # SUSPICIOUS ACTIONS: TNT placement / explosions; origins may be unknown.
   - Trigger: org.bukkit.event.block.BlockPlaceEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.blockPlaced.type.name() == 'TNT'"
@@ -215,7 +215,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.entity.EntityPlaceEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity.type.name() == 'TNT_MINECART' && #event.player != null"
@@ -225,7 +225,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.entity.EntityExplodeEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity != null && (#event.entity.type.name() == 'TNT' || #event.entity.type.name() == 'TNT_MINECART')"
@@ -236,7 +236,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.block.BlockIgniteEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.player != null"
@@ -246,7 +246,7 @@ Alerts:
     Embed: { Enabled: false }
 
   - Trigger: org.bukkit.event.player.PlayerBucketEmptyEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.bucket.name() == 'LAVA_BUCKET'"
@@ -257,7 +257,7 @@ Alerts:
 
   # All named Mob deaths, whether a player is involved or not.
   - Trigger: org.bukkit.event.entity.EntityDeathEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity instanceof T(org.bukkit.entity.Mob) && #event.entity.customName != null"
@@ -272,7 +272,7 @@ Alerts:
   # Named ones are handled by the rule above to avoid duplicate reports.
   # Includes Paper 26.2 friendly non-Animals types; new entity types require list review.
   - Trigger: org.bukkit.event.entity.EntityDeathEvent
-    Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
+    Channel: "1572337028412997713"
     Async: false
     Conditions:
       - "#event.entity.killer != null && #event.entity.customName == null"
@@ -289,7 +289,7 @@ Alerts:
   # COMMAND LOG: player command requests (position of the player, NOT /execute's context).
   - Trigger: org.bukkit.event.player.PlayerCommandPreprocessEvent
     IgnoreCancelled: false
-    Channel: "__SET_COMMAND_LOG_ID__"
+    Channel: "1572337247431168060"
     Async: false
     Conditions:
       # Exclude tell-family, /say, and everyday GSit posture controls (not GSit administration).
@@ -309,7 +309,7 @@ Alerts:
   # Direct server console only. RCON uses RemoteServerCommandEvent (excluded).
   - Trigger: org.bukkit.event.server.ServerCommandEvent
     IgnoreCancelled: false
-    Channel: "__SET_COMMAND_LOG_ID__"
+    Channel: "1572337247431168060"
     Async: false
     Conditions:
       - "#event.getClass().getName() == 'org.bukkit.event.server.ServerCommandEvent'"
