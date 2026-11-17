@@ -134,7 +134,7 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      **[JOIN]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · {time}
+      **[JOIN]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
     Webhook:
       Enabled: true
       Name: "{username}"
@@ -145,7 +145,7 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      **[QUIT]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · {time}
+      **[QUIT]** {username} · `${#event.player.world.name} (${#event.player.location.blockX},${#event.player.location.blockY},${#event.player.location.blockZ})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
     Webhook:
       Enabled: true
       Name: "{username}"
@@ -164,7 +164,7 @@ Alerts:
       Enabled: true
       Color: "#D65050"
       Description: >-
-        **[DEATH]** ${#event.entity.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 原因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · {time}
+        **[DEATH]** ${#event.entity.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 原因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   # Actual cross-world teleports, including portals and /tp-/mvtp-induced transfers.
   # Origin and destination are taken from the event itself (not the command context).
@@ -174,7 +174,7 @@ Alerts:
     Conditions:
       - "#event.to != null && #event.from.world != #event.to.world"
     Content: >-
-      **[WORLD]** {username} · `${#event.from.world.name} (${#event.from.blockX},${#event.from.blockY},${#event.from.blockZ})` → `${#event.to.world.name} (${#event.to.blockX},${#event.to.blockY},${#event.to.blockZ})` · {time}
+      **[WORLD]** {username} · `${#event.from.world.name} (${#event.from.blockX},${#event.from.blockY},${#event.from.blockZ})` → `${#event.to.world.name} (${#event.to.blockX},${#event.to.blockY},${#event.to.blockZ})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
     Webhook:
       Enabled: true
       Name: "{username}"
@@ -185,7 +185,7 @@ Alerts:
   - Trigger: org.bukkit.event.player.AsyncPlayerChatEvent
     Channel: "1572336862331281478"
     Content: >-
-      **[CHAT]** {username} · {time} │ ${#event.message}
+      **[CHAT]** {username} · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())} │ ${#event.message}
     Webhook:
       Enabled: true
       Name: "{username}"
@@ -198,7 +198,7 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      **[DISCORD BROADCAST REQUEST]** ${#event.author.name} · {time} │ ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
+      **[DISCORD BROADCAST REQUEST]** ${#event.author.name} · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())} │ ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
     Webhook:
       Enabled: true
       Name: "${#event.author.name}"
@@ -210,7 +210,7 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      **[TELL]** ${#sender.name} → `${#args.size() > 0 ? #args.get(0) : '(missing)'}` · {time} │ ${#args.size() > 0 ? #allArgs.substring(#args.get(0).length()).trim() : ''}
+      **[TELL]** ${#sender.name} → `${#args.size() > 0 ? #args.get(0) : '(missing)'}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())} │ ${#args.size() > 0 ? #allArgs.substring(#args.get(0).length()).trim() : ''}
     Webhook:
       Enabled: true
       Name: "${#sender.name}"
@@ -223,7 +223,7 @@ Alerts:
     Channel: "1572336862331281478"
     Async: false
     Content: >-
-      **[SAY]** ${#sender.name} · {time} │ ${#allArgs}
+      **[SAY]** ${#sender.name} · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())} │ ${#allArgs}
     Webhook:
       Enabled: true
       Name: "${#sender.name}"
@@ -245,7 +245,7 @@ Alerts:
       Enabled: true
       Color: "#E69F32"
       Description: >-
-        **[TNT PLACE]** {username} · `${#event.blockPlaced.world.name} (${#event.blockPlaced.x},${#event.blockPlaced.y},${#event.blockPlaced.z})` · {time}
+        **[TNT PLACE]** {username} · `${#event.blockPlaced.world.name} (${#event.blockPlaced.x},${#event.blockPlaced.y},${#event.blockPlaced.z})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   - Trigger: org.bukkit.event.entity.EntityPlaceEvent
     Channel: "1572337028412997713"
@@ -261,7 +261,7 @@ Alerts:
       Enabled: true
       Color: "#E69F32"
       Description: >-
-        **[TNT MINECART PLACE]** ${#event.player.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · {time}
+        **[TNT MINECART PLACE]** ${#event.player.name} · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   - Trigger: org.bukkit.event.entity.EntityExplodeEvent
     Channel: "1572337028412997713"
@@ -277,7 +277,7 @@ Alerts:
       Enabled: true
       Color: "#D65050"
       Description: >-
-        **[TNT EXPLODE]** `${#event.entity.type.name()}` · `${#event.location.world.name} (${#event.location.blockX},${#event.location.blockY},${#event.location.blockZ})` · 発動元 `${#event.entity.type.name() == 'TNT' ? (#event.entity.source != null ? #event.entity.source.type.name() : 'UNKNOWN') : 'UNKNOWN'}` · {time}
+        **[TNT EXPLODE]** `${#event.entity.type.name()}` · `${#event.location.world.name} (${#event.location.blockX},${#event.location.blockY},${#event.location.blockZ})` · 発動元 `${#event.entity.type.name() == 'TNT' ? (#event.entity.source != null ? #event.entity.source.type.name() : 'UNKNOWN') : 'UNKNOWN'}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   - Trigger: org.bukkit.event.block.BlockIgniteEvent
     Channel: "1572337028412997713"
@@ -293,7 +293,7 @@ Alerts:
       Enabled: true
       Color: "#E69F32"
       Description: >-
-        **[IGNITE]** ${#event.player.name} · `${#event.block.world.name} (${#event.block.x},${#event.block.y},${#event.block.z})` · 原因 `${#event.cause.name()}` · {time}
+        **[IGNITE]** ${#event.player.name} · `${#event.block.world.name} (${#event.block.x},${#event.block.y},${#event.block.z})` · 原因 `${#event.cause.name()}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   - Trigger: org.bukkit.event.player.PlayerBucketEmptyEvent
     Channel: "1572337028412997713"
@@ -309,7 +309,7 @@ Alerts:
       Enabled: true
       Color: "#E69F32"
       Description: >-
-        **[LAVA PLACE]** {username} · `${#event.blockClicked.world.name} (${#event.blockClicked.getRelative(#event.blockFace).x},${#event.blockClicked.getRelative(#event.blockFace).y},${#event.blockClicked.getRelative(#event.blockFace).z})` · {time}
+        **[LAVA PLACE]** {username} · `${#event.blockClicked.world.name} (${#event.blockClicked.getRelative(#event.blockFace).x},${#event.blockClicked.getRelative(#event.blockFace).y},${#event.blockClicked.getRelative(#event.blockFace).z})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   # All named Mob deaths, whether a player is involved or not.
   - Trigger: org.bukkit.event.entity.EntityDeathEvent
@@ -326,7 +326,7 @@ Alerts:
       Enabled: true
       Color: "#D65050"
       Description: >-
-        **[NAMED MOB DEATH]** `${#event.entity.type.name()}` 「${#event.entity.customName}」 · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 死因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · 加害者 `${#event.entity.killer != null ? #event.entity.killer.name : 'UNKNOWN'}` · {time}
+        **[NAMED MOB DEATH]** `${#event.entity.type.name()}` 「${#event.entity.customName}」 · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · 死因 `${#event.entity.lastDamageCause != null ? #event.entity.lastDamageCause.cause.name() : 'UNKNOWN'}` · 加害者 `${#event.entity.killer != null ? #event.entity.killer.name : 'UNKNOWN'}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   # Common passive animal deaths attributed to a player, including projectile kills.
   # Named ones are handled by the rule above to avoid duplicate reports.
@@ -349,7 +349,7 @@ Alerts:
       Enabled: true
       Color: "#D65050"
       Description: >-
-        **[PASSIVE MOB DEATH]** ${#event.entity.killer.name} → `${#event.entity.type.name()}` · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · {time}
+        **[PASSIVE MOB DEATH]** ${#event.entity.killer.name} → `${#event.entity.type.name()}` · `${#event.entity.world.name} (${#event.entity.location.blockX},${#event.entity.location.blockY},${#event.entity.location.blockZ})` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
 
   # COMMAND LOG: player command requests (position of the player, NOT /execute's context).
   - Trigger: org.bukkit.event.player.PlayerCommandPreprocessEvent
@@ -366,7 +366,7 @@ Alerts:
       - >-
         !#event.message.toLowerCase().matches('(?s)^/(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
     Content: >-
-      **[COMMAND]** {username} · `${#player.world.name} (${#player.location.blockX},${#player.location.blockY},${#player.location.blockZ})` · `${#event.message}` · {time}
+      **[COMMAND]** {username} · `${#player.world.name} (${#player.location.blockX},${#player.location.blockY},${#player.location.blockZ})` · `${#event.message}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
     Webhook:
       Enabled: true
       Name: "{username}"
@@ -387,7 +387,7 @@ Alerts:
       - >-
         !#event.command.toLowerCase().matches('(?s)^(?:discordsrv:)?(?:link|unlink)(?:\s|$).*')
     Content: >-
-      **[CONSOLE COMMAND]** CONSOLE · `${#event.command}` · {time}
+      **[CONSOLE COMMAND]** CONSOLE · `${#event.command}` · ${new java.text.SimpleDateFormat('yyyy/MM/dd HH:mm:ss').format(new java.util.Date())}
     Webhook:
       Enabled: true
       Name: "CONSOLE"
