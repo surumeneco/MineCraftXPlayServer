@@ -175,7 +175,18 @@ Alerts:
       [CHAT] {username} | {date} {time} | ${#event.message}
     Embed: { Enabled: false }
 
-  - Trigger: [/tell, /msg, /w, /minecraft:tell, /minecraft:msg, /minecraft:w]
+  # Incoming Discord -> game broadcast (DiscordSRV fires this only without chat hooks).
+  # This records the message *before* broadcasting; final receipt is not guaranteed.
+  - Trigger: github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent
+    Channel: "__SET_PLAYER_EVENTS_ID__"
+    Async: false
+    Content: >-
+      [DISCORD BROADCAST REQUEST] ${#event.author.name} | {date} {time}
+      | ${T(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer).plainText().serialize(#event.message)}
+    Embed: { Enabled: false }
+
+  - Trigger: [/tell, /msg, /w, /whisper, /minecraft:tell, /minecraft:msg, /minecraft:w, /minecraft:whisper]
+    IgnoreCancelled: false
     Channel: "__SET_PLAYER_EVENTS_ID__"
     Async: false
     Content: >-
@@ -185,6 +196,7 @@ Alerts:
 
   # /say goes to player events only; it is explicitly omitted from command-log rules.
   - Trigger: [/say, /minecraft:say]
+    IgnoreCancelled: false
     Channel: "__SET_PLAYER_EVENTS_ID__"
     Async: false
     Content: >-
@@ -258,12 +270,16 @@ Alerts:
 
   # Common passive animal deaths attributed to a player, including projectile kills.
   # Named ones are handled by the rule above to avoid duplicate reports.
-  # Villagers/other non-Animal friendlies require further classification validation.
+  # Includes Paper 26.2 friendly non-Animals types; new entity types require list review.
   - Trigger: org.bukkit.event.entity.EntityDeathEvent
     Channel: "__SET_SUSPICIOUS_ACTIONS_ID__"
     Async: false
     Conditions:
-      - "#event.entity instanceof T(org.bukkit.entity.Animals) && #event.entity.killer != null && #event.entity.customName == null"
+      - "#event.entity.killer != null && #event.entity.customName == null"
+      # Animals covers usual animal mobs; explicit type names cover friendly mobs outside that interface.
+      - >-
+        #event.entity instanceof T(org.bukkit.entity.Animals)
+        || #event.entity.type.name().matches('ALLAY|BAT|COD|COPPER_GOLEM|DOLPHIN|GLOW_SQUID|HAPPY_GHAST|IRON_GOLEM|NAUTILUS|PUFFERFISH|SALMON|SNOW_GOLEM|SQUID|TADPOLE|TROPICAL_FISH|VILLAGER|WANDERING_TRADER|ZOMBIE_HORSE')
     Content: >-
       [PASSIVE MOB DEATH] ${#event.entity.killer.name} -> ${#event.entity.type.name()}
       | {date} {time} | ${#event.entity.world.name}
@@ -272,12 +288,13 @@ Alerts:
 
   # COMMAND LOG: player command requests (position of the player, NOT /execute's context).
   - Trigger: org.bukkit.event.player.PlayerCommandPreprocessEvent
+    IgnoreCancelled: false
     Channel: "__SET_COMMAND_LOG_ID__"
     Async: false
     Conditions:
       # Exclude tell-family, /say, and everyday GSit posture controls (not GSit administration).
       - >-
-        !#event.message.toLowerCase().matches('(?s)^/(?:[a-z0-9_.-]+:)?(?:tell|msg|w|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
+        !#event.message.toLowerCase().matches('(?s)^/(?:[a-z0-9_.-]+:)?(?:tell|msg|w|whisper|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
       # Account linking/unlinking is excluded, DiscordSRV administration is not.
       - >-
         !#event.message.toLowerCase().matches('(?s)^/(?:[a-z0-9_.-]+:)?(?:discord|discordsrv)\s+(?:link|unlink)(?:\s|$).*')
@@ -291,12 +308,13 @@ Alerts:
 
   # Direct server console only. RCON uses RemoteServerCommandEvent (excluded).
   - Trigger: org.bukkit.event.server.ServerCommandEvent
+    IgnoreCancelled: false
     Channel: "__SET_COMMAND_LOG_ID__"
     Async: false
     Conditions:
       - "#event.getClass().getName() == 'org.bukkit.event.server.ServerCommandEvent'"
       - >-
-        !#event.command.toLowerCase().matches('(?s)^(?:[a-z0-9_.-]+:)?(?:tell|msg|w|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
+        !#event.command.toLowerCase().matches('(?s)^(?:[a-z0-9_.-]+:)?(?:tell|msg|w|whisper|say|sit|lay|crawl|spin|bellyflop)(?:\s|$).*')
       - >-
         !#event.command.toLowerCase().matches('(?s)^(?:[a-z0-9_.-]+:)?(?:discord|discordsrv)\s+(?:link|unlink)(?:\s|$).*')
       - >-
